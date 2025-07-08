@@ -75,3 +75,11 @@ pub fn HitBox::intersects(box1 : HitBox, box2 : HitBox) -> Bool {
     }
   }
 }
+
+///|
+pub fn HitBox::shift(hitbox : HitBox, dir : Vec2D) -> HitBox {
+  match hitbox {
+    Rect(position~, size~) => Rect(position=position + dir, size~)
+    Circle(position~, radius~) => Circle(position=position + dir, radius~)
+  }
+}

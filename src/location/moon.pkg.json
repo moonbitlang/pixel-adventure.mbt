@@ -1,0 +1,6 @@
+{
+  "import": [
+    "peter-jerry-ye/adventure/entity",
+    "peter-jerry-ye/adventure/math"
+  ]
+}
