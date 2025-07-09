@@ -29,6 +29,23 @@ pub fn get_entity(entity : @entity.Entity) -> State? {
 }
 
 ///|
+pub fn set_velocity(entity : @entity.Entity, velocity : @math.Vec2D) -> Unit {
+  if state.get(entity) is Some(st) {
+    state[entity] = { ..st, velocity: Some(velocity) }
+  }
+}
+
+///|
+pub fn set_acceleration(
+  entity : @entity.Entity,
+  acceleration : @math.Vec2D
+) -> Unit {
+  if state.get(entity) is Some(st) {
+    state[entity] = { ..st, acceleration: Some(acceleration) }
+  }
+}
+
+///|
 pub fn shift_entity(entity : @entity.Entity, dir : @math.Vec2D) -> Unit {
   if state.get(entity) is Some(st) {
     let new_location = st.location + dir
@@ -52,12 +69,11 @@ pub fn update() -> Unit {
       new_location = st.location + velocity
       new_hitbox = st.hitbox.shift(velocity)
     }
-    let new_velocity = if st.acceleration is Some(acceleration) {
+    let mut new_velocity = st.velocity
+    if st.acceleration is Some(acceleration) {
       guard st.velocity is Some(velocity)
       // Update the entity's velocity based on its acceleration
-      Some(velocity + acceleration)
-    } else {
-      None
+      new_velocity = Some(velocity + acceleration)
     }
     state[entity] = {
       location: new_location,

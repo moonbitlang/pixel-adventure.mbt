@@ -8,6 +8,7 @@
     "peter-jerry-ye/adventure/external",
     "peter-jerry-ye/adventure/render",
     "Yoorkin/rabbit-tea/dom",
-    "rami3l/js-ffi/js"
+    "rami3l/js-ffi/js",
+    "peter-jerry-ye/adventure/state"
   ]
 }
