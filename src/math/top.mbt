@@ -20,12 +20,22 @@ pub impl Mul for Vec2D with op_mul(this, other) {
 }
 
 ///|
+pub impl Neg for Vec2D with op_neg(this) {
+  Vec2D::new(-this.x, -this.y)
+}
+
+///|
+pub impl Sub for Vec2D with op_sub(this, other) {
+  Vec2D::new(this.x - other.x, this.y - other.y)
+}
+
+///|
 pub fn Vec2D::magnitude(this : Vec2D) -> Double {
   (this.x * this.x + this.y * this.y).sqrt()
 }
 
 ///|
-enum HitBox {
+pub enum HitBox {
   Rect(position~ : Vec2D, size~ : Vec2D)
   Circle(position~ : Vec2D, radius~ : Double)
 }

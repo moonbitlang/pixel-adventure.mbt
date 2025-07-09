@@ -7,13 +7,13 @@ fn main {
   @location.set_entity(
     player,
     @math.Vec2D::new(0, 110),
-    @math.HitBox::rect(@math.Vec2D::new(0, 0), @math.Vec2D::new(32, 32)),
+    @math.HitBox::rect(@math.Vec2D::new(0, 110), @math.Vec2D::new(32, 32)),
   )
   @state.set_player(player)
 
   // move the player around
   @external.schedule_with_fixed_interval(1000 / 60, () => {
-    @state.handle_input()
+    @state.update()
     @location.update()
   })
   |> ignore

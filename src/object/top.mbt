@@ -10,7 +10,7 @@ pub(all) enum State {
   Jump
   Fall
   Run
-} derive(Eq, Hash)
+} derive(Eq, Hash, Show)
 
 ///|
 pub(all) enum Direction {

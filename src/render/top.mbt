@@ -5,6 +5,9 @@ const WIDTH : Double = 300.0
 const HEIGHT : Double = 150.0
 
 ///|
+const DEBUG = true
+
+///|
 let next_frame : Map[@entity.Entity, UInt] = {}
 
 ///|
@@ -159,6 +162,33 @@ fn render_character(
     sprite.height,
   )
   context.restore()
+
+  // Draw the hitbox if in debug mode
+  if DEBUG {
+    guard @location.get_entity(entity) is Some({ hitbox, .. })
+    match hitbox {
+      Rect(position~, size~) => {
+        context.save()
+        context.set_stroke_style(@js.Union3::from0("red"))
+        context.stroke_rect(position.x, position.y, size.x, size.y)
+        context.restore()
+      }
+      Circle(position~, radius~) => {
+        context.save()
+        context.set_stroke_style(@js.Union3::from0("red"))
+        context.begin_path()
+        context.arc(
+          position.x,
+          position.y,
+          radius,
+          0.0,
+          2.0 * @moonbitlang/core/math.PI,
+        )
+        context.stroke()
+        context.restore()
+      }
+    }
+  }
 }
 
 ///|
