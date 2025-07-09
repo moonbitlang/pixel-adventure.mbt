@@ -18,8 +18,8 @@ let jmp_acc : @math.Vec2D = @math.Vec2D::new(0, 0.05)
 ///|
 pub fn update() -> Unit {
   check_state()
-  check_collision()
   handle_input()
+  check_collision()
 }
 
 ///|
@@ -27,17 +27,7 @@ fn handle_input() -> Unit {
   guard player.val is Some(player) else { return }
   guard @object.get_state(player) is Some(state)
   match state {
-    Idle => {
-      // Ensure player stays still when on ground and no input
-      if @location.get_entity(player) is Some({ hitbox, .. }) &&
-        hitbox.intersects(
-          @math.HitBox::rect(
-            @math.Vec2D::new(0, 150 - 8),
-            @math.Vec2D::new(300, 8),
-          ),
-        ) {
-        @location.set_velocity(player, @math.Vec2D::new(0, 0))
-      }
+    Idle =>
       if @external.is_pressed(ArrowLeft) {
         @object.enter_state(player, Run)
         @object.set_direction(player, Left)
@@ -51,7 +41,6 @@ fn handle_input() -> Unit {
         @location.set_velocity(player, jmp_v)
         @location.set_acceleration(player, jmp_acc)
       }
-    }
     Run =>
       if @external.is_pressed(ArrowUp) {
         let mut v = jmp_v
@@ -100,12 +89,20 @@ fn check_collision() -> Unit {
   guard player.val is Some(player) else { return }
   guard @object.get_state(player) is Some(state)
   guard @location.get_entity(player) is Some({ hitbox, .. }) else { return }
-  if hitbox.intersects(
-      @math.HitBox::rect(@math.Vec2D::new(0, 150 - 8), @math.Vec2D::new(300, 8)),
-    ) &&
-    state is Fall {
-    @object.enter_state(player, Idle)
-    @location.set_acceleration(player, @math.Vec2D::new(0, 0))
-    @location.set_velocity(player, @math.Vec2D::new(0, 0))
+  for entity in @entity.entities() {
+    guard @object.get_object(entity) is Some(Terrain(_)) else { continue }
+    guard @location.get_entity(entity) is Some({ hitbox: other_hitbox, .. }) else {
+      continue
+    }
+    if hitbox.intersects(other_hitbox) {
+      // Collision detected, handle it
+      // TODO: determine the type of collision
+      if state is Fall {
+        @object.enter_state(player, Idle)
+        @location.set_velocity(player, @math.Vec2D::new(0, 0))
+        @location.set_acceleration(player, @math.Vec2D::new(0, 0))
+        return
+      }
+    }
   }
 }

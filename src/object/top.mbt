@@ -4,6 +4,11 @@ pub(all) enum Character {
 } derive(Eq, Hash)
 
 ///|
+pub(all) enum Object {
+  Terrain(offset~ : @math.Vec2D, size~ : @math.Vec2D)
+}
+
+///|
 pub(all) enum State {
   Idle
   Hit
@@ -90,4 +95,20 @@ pub fn set_stage(entity : @entity.Entity, new_stage : Stage) -> Unit {
 ///|
 pub fn get_stage(entity : @entity.Entity) -> Stage? {
   stage.get(entity)
+}
+
+///|
+let object : Map[@entity.Entity, Object] = {}
+
+///|
+pub fn set_object(entity : @entity.Entity, obj : Object) -> Unit {
+  if object.get(entity) is None {
+    @entity.on_remove(entity, () => object.remove(entity))
+  }
+  object[entity] = obj
+}
+
+///|
+pub fn get_object(entity : @entity.Entity) -> Object? {
+  object.get(entity)
 }

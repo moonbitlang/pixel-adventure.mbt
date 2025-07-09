@@ -95,10 +95,12 @@ fn init {
 pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
   context.clear_rect(0, 0, WIDTH, HEIGHT)
   render_background(context)
-  render_floor(context)
   for entity in @entity.entities() {
     if @object.get_character(entity) is Some(_) {
       render_character(context, entity)
+    }
+    if @object.get_object(entity) is Some(_) {
+      render_object(context, entity)
     }
   }
 }
@@ -223,20 +225,23 @@ let terrain : @dom.HTMLImageElement = {
 }
 
 ///|
-fn render_floor(context : @dom.CanvasRenderingContext2D) -> Unit {
-  context.save()
-  for i = 0; i <= WIDTH.to_int() / 16; i = i + 1 {
+fn render_object(
+  context : @dom.CanvasRenderingContext2D,
+  entity : @entity.Entity
+) -> Unit {
+  guard @object.get_object(entity) is Some(object)
+  guard @location.get_entity(entity) is Some({ location, .. }) else { return }
+  if object is Terrain(offset~, size~) {
     context.draw_image_with_src_and_dst_size(
       terrain |> @js.Value::cast_from |> @js.Value::cast,
-      16,
-      0,
-      16,
-      8,
-      i.to_double() * 16.0,
-      HEIGHT - 8.0,
-      16,
-      8,
+      offset.x,
+      offset.y,
+      size.x,
+      size.y,
+      location.x,
+      location.y,
+      size.x,
+      size.y,
     )
   }
-  context.restore()
 }
