@@ -29,6 +29,17 @@ fn main {
     )
   }
 
+  // add enemy
+  let enemy = @entity.Entity::new()
+  @object.set_character(enemy, Mushroom)
+  @object.enter_state(enemy, Idle)
+  @object.set_direction(enemy, Left)
+  @location.set_entity(
+    enemy,
+    @math.Vec2D::new(200, 110),
+    @math.HitBox::rect(@math.Vec2D::new(200, 110), @math.Vec2D::new(32, 32)),
+  )
+
   // move the player around
   @external.schedule_with_fixed_interval(1000 / 60, () => {
     @state.update()

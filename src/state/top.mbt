@@ -7,13 +7,13 @@ pub fn set_player(entity : @entity.Entity) -> Unit {
 }
 
 ///|
-let jmp_v : @math.Vec2D = @math.Vec2D::new(0, -2)
+const JUMP_V = -2.0
 
 ///|
-let run_v : @math.Vec2D = @math.Vec2D::new(1, 0)
+const RUN_V = 1.0
 
 ///|
-let jmp_acc : @math.Vec2D = @math.Vec2D::new(0, 0.05)
+const JUMP_ACC = 0.05
 
 ///|
 pub fn update() -> Unit {
@@ -31,56 +31,91 @@ fn handle_input() -> Unit {
       if @external.is_pressed(ArrowLeft) {
         @object.enter_state(player, Run)
         @object.set_direction(player, Left)
-        @location.set_velocity(player, -run_v)
+        @location.set_horizontal_velocity(player, -RUN_V)
       } else if @external.is_pressed(ArrowRight) {
         @object.enter_state(player, Run)
         @object.set_direction(player, Right)
-        @location.set_velocity(player, run_v)
+        @location.set_horizontal_velocity(player, RUN_V)
       } else if @external.is_pressed(ArrowUp) {
         @object.enter_state(player, Jump)
-        @location.set_velocity(player, jmp_v)
-        @location.set_acceleration(player, jmp_acc)
+        @location.set_vertical_velocity(player, JUMP_V)
+        @location.set_vertical_acceleration(player, JUMP_ACC)
       }
     Run =>
       if @external.is_pressed(ArrowUp) {
-        let mut v = jmp_v
-        if @object.get_state(player) is Some(Run) {
-          v += if @object.get_direction(player) is Some(Left) {
-            -run_v
-          } else {
-            run_v
-          }
-        }
         @object.enter_state(player, Jump)
-        @location.set_velocity(player, v)
-        @location.set_acceleration(player, jmp_acc)
+        @location.set_vertical_velocity(player, JUMP_V)
+        @location.set_vertical_acceleration(player, JUMP_ACC)
       } else if @external.is_pressed(ArrowLeft) {
         if @object.get_direction(player) is Some(Right) {
           @object.set_direction(player, Left)
-          @location.set_velocity(player, -run_v)
+          @location.set_horizontal_velocity(player, -RUN_V)
         }
       } else if @external.is_pressed(ArrowRight) {
         if @object.get_direction(player) is Some(Left) {
           @object.set_direction(player, Right)
-          @location.set_velocity(player, run_v)
+          @location.set_horizontal_velocity(player, RUN_V)
         }
       } else {
         @object.enter_state(player, Idle)
-        @location.set_velocity(player, @math.Vec2D::new(0, 0))
+        @location.set_horizontal_velocity(player, 0)
       }
-    _ => ()
+    Jump | Fall =>
+      if @external.is_pressed(ArrowLeft) {
+        @object.set_direction(player, Left)
+        @location.set_horizontal_velocity(player, -RUN_V)
+      } else if @external.is_pressed(ArrowRight) {
+        @object.set_direction(player, Right)
+        @location.set_horizontal_velocity(player, RUN_V)
+      }
+    Hit =>
+      if @external.is_pressed(ArrowUp) {
+        if @location.get_entity(player)
+          is Some({ acceleration: Some({ y, .. }), .. }) &&
+          y == 0 {
+          @location.set_vertical_velocity(player, JUMP_V)
+          @location.set_vertical_acceleration(player, JUMP_ACC)
+        }
+      } else if @external.is_pressed(ArrowLeft) {
+        if @object.get_direction(player) is Some(Right) {
+          @object.set_direction(player, Left)
+          @location.set_horizontal_velocity(player, -RUN_V)
+        }
+      } else if @external.is_pressed(ArrowRight) {
+        if @object.get_direction(player) is Some(Left) {
+          @object.set_direction(player, Right)
+          @location.set_horizontal_velocity(player, RUN_V)
+        }
+      } else {
+        @location.set_horizontal_velocity(player, 0)
+      }
   }
 }
 
 ///|
 fn check_state() -> Unit {
   guard player.val is Some(player) else { return }
-  guard @location.get_entity(player) is Some({ velocity: Some({ y, .. }), .. }) else {
+  guard @location.get_entity(player) is Some({ velocity: Some({ x, y }), .. }) else {
     return
   }
   guard @object.get_state(player) is Some(state)
+  guard @object.get_stage(player) is Some(stage)
   if state is Jump && y > 0 {
     @object.enter_state(player, Fall)
+  } else if state is Hit && stage is Exit {
+    if y < 0 {
+      @object.enter_state(player, Jump)
+    } else if y > 0 {
+      @object.enter_state(player, Fall)
+    } else if x > 0 {
+      @object.enter_state(player, Run)
+      @object.set_direction(player, Right)
+    } else if x < 0 {
+      @object.enter_state(player, Run)
+      @object.set_direction(player, Left)
+    } else {
+      @object.enter_state(player, Idle)
+    }
   }
 }
 
@@ -90,18 +125,24 @@ fn check_collision() -> Unit {
   guard @object.get_state(player) is Some(state)
   guard @location.get_entity(player) is Some({ hitbox, .. }) else { return }
   for entity in @entity.entities() {
-    guard @object.get_object(entity) is Some(Terrain(_)) else { continue }
     guard @location.get_entity(entity) is Some({ hitbox: other_hitbox, .. }) else {
       continue
     }
     if hitbox.intersects(other_hitbox) {
-      // Collision detected, handle it
-      // TODO: determine the type of collision
-      if state is Fall {
-        @object.enter_state(player, Idle)
-        @location.set_velocity(player, @math.Vec2D::new(0, 0))
-        @location.set_acceleration(player, @math.Vec2D::new(0, 0))
-        return
+      if @object.get_object(entity) is Some(Terrain(_)) {
+        // Collision detected, handle it
+        if !(state is Jump) {
+          @location.set_vertical_velocity(player, 0)
+          @location.set_vertical_acceleration(player, 0)
+        }
+        if state is Fall {
+          @object.enter_state(player, Idle)
+        }
+      }
+      if @object.get_character(entity) is Some(Mushroom) &&
+        !(@object.get_state(player) is Some(Hit)) {
+        // Collision with a character, handle it
+        @object.enter_state(player, Hit)
       }
     }
   }

@@ -59,6 +59,21 @@ fn init {
     )
     { sprite: element, max_frame: 12, loop_: true, height: 32.0, width: 32.0 }
   }
+  sprites[(Mushroom, Idle)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Enemies/Mushroom/Idle (32x32).png")
+    { sprite: element, max_frame: 14, loop_: true, height: 32.0, width: 32.0 }
+  }
+  sprites[(Mushroom, Run)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Enemies/Mushroom/Run (32x32).png")
+    { sprite: element, max_frame: 16, loop_: true, height: 32.0, width: 32.0 }
+  }
+  sprites[(Mushroom, Hit)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Enemies/Mushroom/Hit.png")
+    { sprite: element, max_frame: 5, loop_: false, height: 32.0, width: 32.0 }
+  }
 }
 
 ///|
