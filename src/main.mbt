@@ -2,8 +2,7 @@
 fn main {
   let player = @entity.Entity::new()
   @object.set_character(player, MaskDude)
-  @object.set_stage(player, Active)
-  @object.set_state(player, Idle)
+  @object.enter_state(player, Idle)
   @object.set_direction(player, Right)
   @location.set_entity(
     player,
@@ -16,22 +15,19 @@ fn main {
       ArrowRight,
     ) {
     guard @object.get_state(player) is Some(Run) else {
-      @object.set_stage(player, Active)
-      @object.set_state(player, Run)
+      @object.enter_state(player, Run)
     }
     @object.set_direction(player, Right)
     @location.shift_entity(player, @math.Vec2D::new(1, 0))
   } else if @external.is_pressed(ArrowLeft) {
     guard @object.get_state(player) is Some(Run) else {
-      @object.set_state(player, Run)
-      @object.set_stage(player, Active)
+      @object.enter_state(player, Run)
     }
     @object.set_direction(player, Left)
     @location.shift_entity(player, @math.Vec2D::new(-1, 0))
   } else {
     guard @object.get_state(player) is Some(Idle) else {
-      @object.set_state(player, Idle)
-      @object.set_stage(player, Active)
+      @object.enter_state(player, Idle)
     }
   })
   |> ignore

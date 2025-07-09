@@ -44,11 +44,15 @@ pub fn get_character(entity : @entity.Entity) -> Character? {
 let state : Map[@entity.Entity, State] = {}
 
 ///|
-pub fn set_state(entity : @entity.Entity, new_state : State) -> Unit {
+pub fn enter_state(entity : @entity.Entity, new_state : State) -> Unit {
+  if stage.get(entity) is None {
+    @entity.on_remove(entity, () => stage.remove(entity))
+  }
   if state.get(entity) is None {
     @entity.on_remove(entity, () => state.remove(entity))
   }
   state[entity] = new_state
+  stage[entity] = Enter
 }
 
 ///|

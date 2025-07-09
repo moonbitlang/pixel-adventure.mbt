@@ -121,25 +121,22 @@ fn render_character(
     (sprite, 0U)
     // update the frame
   } else if next_frame.get(entity) is Some(f) {
-    if f >= sprite.max_frame {
-      // If the frame is greater than or equal to the shift, reset it
-      // and set the next state if it exists
-      if sprite.next_state is Some(ns) {
-        @object.set_state(entity, ns)
-        @object.set_stage(entity, Active)
-        (sprites.get((character, ns)).unwrap(), 0U)
-      } else {
-        (sprite, 0U)
-      }
-    } else {
-      // Otherwise, just increment the frame
-      (sprite, f)
-    }
+    // Otherwise, just increment the frame
+    (sprite, f)
   } else {
     // Wasn't initialized, so initialize it
     (sprite, 0U)
   }
-  next_frame[entity] = curr_frame + 1
+  // Compute next frame
+  if curr_frame + 1 == sprite.max_frame {
+    if sprite.next_state is Some(next_state) {
+      @object.enter_state(entity, next_state)
+    }
+    next_frame[entity] = 0
+  } else {
+    next_frame[entity] = curr_frame + 1
+  }
+
   // Draw the character
   guard @location.get_entity(entity) is Some({ location, .. })
   guard @object.get_direction(entity) is Some(direction)
