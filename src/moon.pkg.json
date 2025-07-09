@@ -1,3 +1,13 @@
 {
-  "is-main": true
+  "is-main": true,
+  "import": [
+    "peter-jerry-ye/adventure/entity",
+    "peter-jerry-ye/adventure/object",
+    "peter-jerry-ye/adventure/location",
+    "peter-jerry-ye/adventure/math",
+    "peter-jerry-ye/adventure/external",
+    "peter-jerry-ye/adventure/render",
+    "Yoorkin/rabbit-tea/dom",
+    "rami3l/js-ffi/js"
+  ]
 }
