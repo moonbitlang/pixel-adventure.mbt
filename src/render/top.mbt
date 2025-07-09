@@ -14,7 +14,7 @@ let next_frame : Map[@entity.Entity, UInt] = {}
 priv struct Animation {
   sprite : @dom.HTMLImageElement
   max_frame : UInt
-  next_state : @object.State?
+  loop_ : Bool
   height : Double
   width : Double
 }
@@ -29,65 +29,35 @@ fn init {
     element.set_src(
       "/pixel_adventure/Main Characters/Mask Dude/Idle (32x32).png",
     )
-    {
-      sprite: element,
-      max_frame: 11,
-      next_state: None,
-      height: 32.0,
-      width: 32.0,
-    }
+    { sprite: element, max_frame: 11, loop_: true, height: 32.0, width: 32.0 }
   }
   sprites[(MaskDude, Hit)] = {
     let element = @dom.HTMLImageElement::new()
     element.set_src(
       "/pixel_adventure/Main Characters/Mask Dude/Hit (32x32).png",
     )
-    {
-      sprite: element,
-      max_frame: 7,
-      next_state: Some(Idle),
-      height: 32.0,
-      width: 32.0,
-    }
+    { sprite: element, max_frame: 7, loop_: false, height: 32.0, width: 32.0 }
   }
   sprites[(MaskDude, Jump)] = {
     let element = @dom.HTMLImageElement::new()
     element.set_src(
       "/pixel_adventure/Main Characters/Mask Dude/Jump (32x32).png",
     )
-    {
-      sprite: element,
-      max_frame: 1,
-      next_state: None,
-      height: 32.0,
-      width: 32.0,
-    }
+    { sprite: element, max_frame: 1, loop_: true, height: 32.0, width: 32.0 }
   }
   sprites[(MaskDude, Fall)] = {
     let element = @dom.HTMLImageElement::new()
     element.set_src(
       "/pixel_adventure/Main Characters/Mask Dude/Fall (32x32).png",
     )
-    {
-      sprite: element,
-      max_frame: 1,
-      next_state: None,
-      height: 32.0,
-      width: 32.0,
-    }
+    { sprite: element, max_frame: 1, loop_: true, height: 32.0, width: 32.0 }
   }
   sprites[(MaskDude, Run)] = {
     let element = @dom.HTMLImageElement::new()
     element.set_src(
       "/pixel_adventure/Main Characters/Mask Dude/Run (32x32).png",
     )
-    {
-      sprite: element,
-      max_frame: 12,
-      next_state: None,
-      height: 32.0,
-      width: 32.0,
-    }
+    { sprite: element, max_frame: 12, loop_: true, height: 32.0, width: 32.0 }
   }
 }
 
@@ -134,8 +104,8 @@ fn render_character(
   }
   // Compute next frame
   if curr_frame + 1 == sprite.max_frame {
-    if sprite.next_state is Some(next_state) {
-      @object.enter_state(entity, next_state)
+    if !sprite.loop_ {
+      @object.set_stage(entity, Exit)
     }
     next_frame[entity] = 0
   } else {

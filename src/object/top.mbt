@@ -27,6 +27,7 @@ pub(all) enum Direction {
 pub(all) enum Stage {
   Enter
   Active
+  Exit
 } derive(Eq, Hash)
 
 ///|
