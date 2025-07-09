@@ -7,7 +7,7 @@ fn main {
   @object.set_direction(player, Right)
   @location.set_entity(
     player,
-    @math.Vec2D::new(0, 100),
+    @math.Vec2D::new(0, 110),
     @math.HitBox::rect(@math.Vec2D::new(0, 0), @math.Vec2D::new(32, 32)),
   )
 
