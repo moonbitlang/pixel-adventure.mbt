@@ -13,13 +13,13 @@ const JUMP_V = -2.0
 const RUN_V = 1.0
 
 ///|
-const JUMP_ACC = 0.05
+const GRAVITY_ACC = 0.05
 
 ///|
 pub fn update() -> Unit {
+  check_collision()
   check_state()
   handle_input()
-  check_collision()
 }
 
 ///|
@@ -39,27 +39,25 @@ fn handle_input() -> Unit {
       } else if @external.is_pressed(ArrowUp) {
         @object.enter_state(player, Jump)
         @location.set_vertical_velocity(player, JUMP_V)
-        @location.set_vertical_acceleration(player, JUMP_ACC)
+        @location.set_vertical_acceleration(player, GRAVITY_ACC)
       }
-    Run =>
+    Run => {
       if @external.is_pressed(ArrowUp) {
         @object.enter_state(player, Jump)
         @location.set_vertical_velocity(player, JUMP_V)
-        @location.set_vertical_acceleration(player, JUMP_ACC)
-      } else if @external.is_pressed(ArrowLeft) {
-        if @object.get_direction(player) is Some(Right) {
-          @object.set_direction(player, Left)
-          @location.set_horizontal_velocity(player, -RUN_V)
-        }
+        @location.set_vertical_acceleration(player, GRAVITY_ACC)
+      }
+      if @external.is_pressed(ArrowLeft) {
+        @object.set_direction(player, Left)
+        @location.set_horizontal_velocity(player, -RUN_V)
       } else if @external.is_pressed(ArrowRight) {
-        if @object.get_direction(player) is Some(Left) {
-          @object.set_direction(player, Right)
-          @location.set_horizontal_velocity(player, RUN_V)
-        }
+        @object.set_direction(player, Right)
+        @location.set_horizontal_velocity(player, RUN_V)
       } else {
         @object.enter_state(player, Idle)
         @location.set_horizontal_velocity(player, 0)
       }
+    }
     Jump | Fall =>
       if @external.is_pressed(ArrowLeft) {
         @object.set_direction(player, Left)
@@ -70,22 +68,19 @@ fn handle_input() -> Unit {
       }
     Hit =>
       if @external.is_pressed(ArrowUp) {
+        // if is grounded, i.e. vertical acceleration is 0
         if @location.get_entity(player)
           is Some({ acceleration: Some({ y, .. }), .. }) &&
           y == 0 {
           @location.set_vertical_velocity(player, JUMP_V)
-          @location.set_vertical_acceleration(player, JUMP_ACC)
+          @location.set_vertical_acceleration(player, GRAVITY_ACC)
         }
       } else if @external.is_pressed(ArrowLeft) {
-        if @object.get_direction(player) is Some(Right) {
-          @object.set_direction(player, Left)
-          @location.set_horizontal_velocity(player, -RUN_V)
-        }
+        @object.set_direction(player, Left)
+        @location.set_horizontal_velocity(player, -RUN_V)
       } else if @external.is_pressed(ArrowRight) {
-        if @object.get_direction(player) is Some(Left) {
-          @object.set_direction(player, Right)
-          @location.set_horizontal_velocity(player, RUN_V)
-        }
+        @object.set_direction(player, Right)
+        @location.set_horizontal_velocity(player, RUN_V)
       } else {
         @location.set_horizontal_velocity(player, 0)
       }
@@ -136,13 +131,15 @@ fn check_collision() -> Unit {
   guard player.val is Some(player) else { return }
   guard @object.get_state(player) is Some(state)
   let collisions = @location.get_collision(player)
+  // By default, player has gravity
+  @location.set_vertical_acceleration(player, GRAVITY_ACC)
   for entity in collisions {
     if @object.get_object(entity) is Some(Terrain(_)) {
-      // Collision detected, handle it
-      if !(state is Jump) {
-        @location.set_vertical_velocity(player, 0)
-        @location.set_vertical_acceleration(player, 0)
-      }
+      // is grounded, remove gravity
+      @location.set_vertical_acceleration(player, 0)
+      @location.set_vertical_velocity(player, 0)
+      // has friction, remove velocity
+      @location.set_horizontal_velocity(player, 0)
       if state is Fall {
         @object.enter_state(player, Idle)
       }
