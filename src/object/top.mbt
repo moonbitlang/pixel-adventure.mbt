@@ -2,6 +2,7 @@
 pub(all) enum Character {
   MaskDude
   Mushroom
+  Banana
 } derive(Eq, Hash)
 
 ///|

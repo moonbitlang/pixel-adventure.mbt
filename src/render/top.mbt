@@ -99,6 +99,16 @@ fn init {
       offset=@math.Vec2D::new(-32, -32),
     )
   }
+  sprites[(Banana, Idle)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Items/Fruits/Bananas.png")
+    Animation::new(element, max_frame=17, height=32.0, width=32.0)
+  }
+  sprites[(Banana, Disapper)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Items/Fruits/Collected.png")
+    Animation::new(element, max_frame=6, loop_=false, height=32.0, width=32.0)
+  }
 }
 
 ///|
@@ -154,7 +164,7 @@ fn render_character(
 
   // Draw the character
   guard @location.get_entity(entity) is Some({ location, .. })
-  guard @object.get_direction(entity) is Some(direction)
+  let direction = @object.get_direction(entity).unwrap_or(Right)
   context.save()
   if direction is Left {
     context.translate(

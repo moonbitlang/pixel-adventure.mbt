@@ -122,6 +122,11 @@ fn check_state() -> Unit {
         @object.get_stage(entity) is Some(Exit) {
         @entity.remove_entities(entity)
       }
+    } else if @object.get_character(entity) is Some(Banana) {
+      if @object.get_state(entity) is Some(Disapper) &&
+        @object.get_stage(entity) is Some(Exit) {
+        @entity.remove_entities(entity)
+      }
     }
   }
 }
@@ -156,6 +161,10 @@ fn check_collision() -> Unit {
         } else {
           @object.enter_state(player, Hit)
         }
+      }
+    } else if @object.get_character(entity) is Some(Banana) {
+      if !(@object.get_state(entity) is Some(Disapper)) {
+        @object.enter_state(entity, Disapper)
       }
     }
   }

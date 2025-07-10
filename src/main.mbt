@@ -32,6 +32,19 @@ fn main {
     )
   }
 
+  // add fruit
+  let fruit = @entity.Entity::new()
+  @object.set_character(fruit, Banana)
+  @object.enter_state(fruit, Idle)
+  @location.set_entity(
+    fruit,
+    @math.Vec2D::new(100, @render.HEIGHT - 40),
+    @math.HitBox::rect(
+      @math.Vec2D::new(100, @render.HEIGHT - 40),
+      @math.Vec2D::new(32, 32),
+    ),
+  )
+
   // add enemy
   let enemy = @entity.Entity::new()
   @object.set_character(enemy, Mushroom)
