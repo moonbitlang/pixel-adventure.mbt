@@ -89,6 +89,7 @@ fn handle_input() -> Unit {
       } else {
         @location.set_horizontal_velocity(player, 0)
       }
+    Disapper => ()
   }
 }
 
@@ -117,6 +118,17 @@ fn check_state() -> Unit {
       @object.enter_state(player, Idle)
     }
   }
+  for entity in @entity.entities() {
+    if @object.get_character(entity) is Some(Mushroom) {
+      if @object.get_state(entity) is Some(Hit) &&
+        @object.get_stage(entity) is Some(Exit) {
+        @object.enter_state(entity, Disapper)
+      } else if @object.get_state(entity) is Some(Disapper) &&
+        @object.get_stage(entity) is Some(Exit) {
+        @entity.remove_entities(entity)
+      }
+    }
+  }
 }
 
 ///|
@@ -135,10 +147,19 @@ fn check_collision() -> Unit {
         @object.enter_state(player, Idle)
       }
     }
-    if @object.get_character(entity) is Some(Mushroom) &&
-      !(@object.get_state(player) is Some(Hit)) {
-      // Collision with a character, handle it
-      @object.enter_state(player, Hit)
+    if @object.get_character(entity) is Some(Mushroom) {
+      // Handle collision if none is already in Hit or Disapper state
+      if !(@object.get_state(entity) is Some(Hit | Disapper)) &&
+        !(@object.get_state(player) is Some(Hit)) {
+        // Collision with a character, handle it
+        guard @location.get_entity(player) is Some({ location: player_loc, .. })
+        guard @location.get_entity(entity) is Some({ location: entity_loc, .. })
+        if player_loc.y < entity_loc.y - 16 {
+          @object.enter_state(entity, Hit)
+        } else {
+          @object.enter_state(player, Hit)
+        }
+      }
     }
   }
 }

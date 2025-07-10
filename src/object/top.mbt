@@ -16,6 +16,7 @@ pub(all) enum State {
   Jump
   Fall
   Run
+  Disapper
 } derive(Eq, Hash, Show)
 
 ///|
