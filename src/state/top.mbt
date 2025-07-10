@@ -146,7 +146,8 @@ fn check_collision() -> Unit {
   let collisions = @location.get_collision(player)
   // By default, player has gravity
   @location.set_vertical_acceleration(player, GRAVITY_ACC)
-  for entity in collisions {
+  for collision in collisions {
+    let (entity, direction) = collision
     if @object.get_object(entity) is Some(Terrain(_)) {
       // is grounded, remove gravity
       @location.set_vertical_acceleration(player, 0)
@@ -162,9 +163,7 @@ fn check_collision() -> Unit {
       if !(@object.get_state(entity) is Some(Hit | Disapper)) &&
         !(@object.get_state(player) is Some(Hit)) {
         // Collision with a character, handle it
-        guard @location.get_entity(player) is Some({ location: player_loc, .. })
-        guard @location.get_entity(entity) is Some({ location: entity_loc, .. })
-        if player_loc.y < entity_loc.y - 16 {
+        if direction.y < 0 {
           @object.enter_state(entity, Hit)
         } else {
           @object.enter_state(player, Hit)

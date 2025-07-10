@@ -311,17 +311,6 @@ fn render_hitobx(context : @dom.CanvasRenderingContext2D) -> Unit {
     match hitbox {
       Rect(position~, size~) =>
         context.stroke_rect(position.x, position.y, size.x, size.y)
-      Circle(position~, radius~) => {
-        context.begin_path()
-        context.arc(
-          position.x,
-          position.y,
-          radius,
-          0.0,
-          2.0 * @moonbitlang/core/math.PI,
-        )
-        context.stroke()
-      }
     }
   }
   context.restore()

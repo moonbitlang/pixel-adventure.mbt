@@ -13,18 +13,26 @@ pub let quadtree : Ref[QuadTree] = {
 }
 
 ///|
-pub fn get_collision(entity : @entity.Entity) -> @set.Set[@entity.Entity] {
+pub fn get_collision(
+  entity : @entity.Entity
+) -> Map[@entity.Entity, @math.Vec2D] {
   state
   .get(entity)
   .map(st => quadtree.val
     .query(st.hitbox)
     .iter()
-    .filter(e => {
-      let hitbox = state.get(e).unwrap().hitbox
-      e != entity && hitbox.intersects(st.hitbox)
-    })
-    |> @set.Set::from_iter)
-  .unwrap_or(@set.Set::new())
+    .filter_map(
+      // The entity could have been removed
+      e => if state.get(e) is Some({ hitbox, .. }) &&
+        e != entity &&
+        hitbox.intersects(st.hitbox) is Some(vec) {
+        Some((e, vec))
+      } else {
+        None
+      },
+    )
+    |> Map::from_iter)
+  .unwrap_or({})
 }
 
 ///|
@@ -59,7 +67,7 @@ fn QuadTree::insert(
   entity : @entity.Entity,
   hitbox : @math.HitBox
 ) -> Unit {
-  if !self.bounding_box.intersects(hitbox) {
+  if self.bounding_box.intersects(hitbox) is None {
     return
   }
   if self.depth >= MAX_DEPTH {
@@ -100,7 +108,7 @@ fn QuadTree::query(
   let mut results = @set.Set::new()
   while trees is More(hd, tail=rest) {
     trees = rest
-    if !hd.bounding_box.intersects(area) {
+    if hd.bounding_box.intersects(area) is None {
       continue
     }
     if hd.children is [] {
