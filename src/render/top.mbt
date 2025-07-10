@@ -1,8 +1,8 @@
 ///|
-const WIDTH : Double = 300.0
+pub const WIDTH : Double = 512.0
 
 ///|
-const HEIGHT : Double = 150.0
+pub const HEIGHT : Double = 256.0
 
 ///|
 const DEBUG = true
