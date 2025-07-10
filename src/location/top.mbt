@@ -17,10 +17,14 @@ pub fn set_entity(
   velocity? : @math.Vec2D,
   acceleration? : @math.Vec2D
 ) -> Unit {
+  if state.get(entity) is None {
+    @entity.on_remove(entity, () => state.remove(entity))
+  }
   if acceleration is Some(_) && velocity is None {
     abort("Cannot set acceleration without velocity")
   }
   state[entity] = { location, hitbox, velocity, acceleration }
+  quadtree.val.insert(entity, hitbox)
 }
 
 ///|
@@ -104,6 +108,11 @@ pub fn shift_entity(entity : @entity.Entity, dir : @math.Vec2D) -> Unit {
 
 ///|
 pub fn update() -> Unit {
+  quadtree.val = QuadTree::new(
+    @math.Vec2D::new(0, 0),
+    @math.Vec2D::new(WIDTH, HEIGHT),
+    0,
+  )
   for entity, st in state {
     let mut new_location = st.location
     let mut new_hitbox = st.hitbox
@@ -124,5 +133,6 @@ pub fn update() -> Unit {
       velocity: new_velocity,
       acceleration: st.acceleration,
     }
+    quadtree.val.insert(entity, new_hitbox)
   }
 }

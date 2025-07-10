@@ -5,7 +5,10 @@ pub const WIDTH : Double = 512.0
 pub const HEIGHT : Double = 256.0
 
 ///|
-const DEBUG = true
+const DEBUG_HITBOX = true
+
+///|
+const DEBUG_QUADTREE = true
 
 ///|
 let next_frame : Map[@entity.Entity, UInt] = {}
@@ -127,6 +130,12 @@ fn init {
 pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
   context.clear_rect(0, 0, WIDTH, HEIGHT)
   render_background(context)
+  if DEBUG_QUADTREE {
+    render_quadtree(context)
+  }
+  if DEBUG_HITBOX {
+    render_hitobx(context)
+  }
   for entity in @entity.entities() {
     if @object.get_character(entity) is Some(_) {
       render_character(context, entity)
@@ -202,33 +211,6 @@ fn render_character(
     sprite.height,
   )
   context.restore()
-
-  // Draw the hitbox if in debug mode
-  if DEBUG {
-    guard @location.get_entity(entity) is Some({ hitbox, .. })
-    match hitbox {
-      Rect(position~, size~) => {
-        context.save()
-        context.set_stroke_style(@js.Union3::from0("red"))
-        context.stroke_rect(position.x, position.y, size.x, size.y)
-        context.restore()
-      }
-      Circle(position~, radius~) => {
-        context.save()
-        context.set_stroke_style(@js.Union3::from0("red"))
-        context.begin_path()
-        context.arc(
-          position.x,
-          position.y,
-          radius,
-          0.0,
-          2.0 * @moonbitlang/core/math.PI,
-        )
-        context.stroke()
-        context.restore()
-      }
-    }
-  }
 }
 
 ///|
@@ -298,4 +280,49 @@ fn render_game_state(context : @dom.CanvasRenderingContext2D) -> Unit {
     }
     context.restore()
   }
+}
+
+///|
+fn render_quadtree(context : @dom.CanvasRenderingContext2D) -> Unit {
+  context.save()
+  context.set_stroke_style(@js.Union3::from0("blue"))
+  fn render_node(node : @location.QuadTree) -> Unit {
+    context.stroke_rect(
+      node.position.x,
+      node.position.y,
+      node.size.x,
+      node.size.y,
+    )
+    for child in node.children {
+      render_node(child)
+    }
+  }
+
+  render_node(@location.quadtree.val)
+  context.restore()
+}
+
+///|
+fn render_hitobx(context : @dom.CanvasRenderingContext2D) -> Unit {
+  context.save()
+  context.set_stroke_style(@js.Union3::from0("red"))
+  for entity in @entity.entities() {
+    guard @location.get_entity(entity) is Some({ hitbox, .. }) else { continue }
+    match hitbox {
+      Rect(position~, size~) =>
+        context.stroke_rect(position.x, position.y, size.x, size.y)
+      Circle(position~, radius~) => {
+        context.begin_path()
+        context.arc(
+          position.x,
+          position.y,
+          radius,
+          0.0,
+          2.0 * @moonbitlang/core/math.PI,
+        )
+        context.stroke()
+      }
+    }
+  }
+  context.restore()
 }
