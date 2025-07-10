@@ -42,6 +42,7 @@ fn main {
 
   // move the player around
   @external.schedule_with_fixed_interval(1000 / 60, () => {
+    @location.update_collision()
     @state.update()
     @location.update()
   })

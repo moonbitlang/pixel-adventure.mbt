@@ -123,27 +123,22 @@ fn check_state() -> Unit {
 fn check_collision() -> Unit {
   guard player.val is Some(player) else { return }
   guard @object.get_state(player) is Some(state)
-  guard @location.get_entity(player) is Some({ hitbox, .. }) else { return }
-  for entity in @entity.entities() {
-    guard @location.get_entity(entity) is Some({ hitbox: other_hitbox, .. }) else {
-      continue
+  let collisions = @location.get_collision(player)
+  for entity in collisions {
+    if @object.get_object(entity) is Some(Terrain(_)) {
+      // Collision detected, handle it
+      if !(state is Jump) {
+        @location.set_vertical_velocity(player, 0)
+        @location.set_vertical_acceleration(player, 0)
+      }
+      if state is Fall {
+        @object.enter_state(player, Idle)
+      }
     }
-    if hitbox.intersects(other_hitbox) {
-      if @object.get_object(entity) is Some(Terrain(_)) {
-        // Collision detected, handle it
-        if !(state is Jump) {
-          @location.set_vertical_velocity(player, 0)
-          @location.set_vertical_acceleration(player, 0)
-        }
-        if state is Fall {
-          @object.enter_state(player, Idle)
-        }
-      }
-      if @object.get_character(entity) is Some(Mushroom) &&
-        !(@object.get_state(player) is Some(Hit)) {
-        // Collision with a character, handle it
-        @object.enter_state(player, Hit)
-      }
+    if @object.get_character(entity) is Some(Mushroom) &&
+      !(@object.get_state(player) is Some(Hit)) {
+      // Collision with a character, handle it
+      @object.enter_state(player, Hit)
     }
   }
 }
