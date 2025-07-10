@@ -37,14 +37,9 @@ pub fn set_vertical_velocity(
   entity : @entity.Entity,
   vertical_velocity : Double
 ) -> Unit {
-  if state.get(entity) is Some(st) {
-    let velocity = if st.velocity is Some(v) {
-      @math.Vec2D::new(v.x, vertical_velocity)
-    } else {
-      @math.Vec2D::new(0, vertical_velocity)
-    }
-    state[entity] = { ..st, velocity: Some(velocity) }
-  }
+  guard state.get(entity) is Some({ velocity: Some(v), .. } as st)
+  let velocity = @math.Vec2D::new(v.x, vertical_velocity)
+  state[entity] = { ..st, velocity: Some(velocity) }
 }
 
 ///|
@@ -52,14 +47,9 @@ pub fn set_horizontal_velocity(
   entity : @entity.Entity,
   horizontal_velocity : Double
 ) -> Unit {
-  if state.get(entity) is Some(st) {
-    let velocity = if st.velocity is Some(v) {
-      @math.Vec2D::new(horizontal_velocity, v.y)
-    } else {
-      @math.Vec2D::new(horizontal_velocity, 0)
-    }
-    state[entity] = { ..st, velocity: Some(velocity) }
-  }
+  guard state.get(entity) is Some({ velocity: Some(v), .. } as st)
+  let velocity = @math.Vec2D::new(horizontal_velocity, v.y)
+  state[entity] = { ..st, velocity: Some(velocity) }
 }
 
 ///|
@@ -67,14 +57,9 @@ pub fn set_vertical_acceleration(
   entity : @entity.Entity,
   vertical_acceleration : Double
 ) -> Unit {
-  if state.get(entity) is Some(st) {
-    let acceleration = if st.acceleration is Some(a) {
-      @math.Vec2D::new(a.x, vertical_acceleration)
-    } else {
-      @math.Vec2D::new(0, vertical_acceleration)
-    }
-    state[entity] = { ..st, acceleration: Some(acceleration) }
-  }
+  guard state.get(entity) is Some({ acceleration: Some(a), .. } as st)
+  let acceleration = @math.Vec2D::new(a.x, vertical_acceleration)
+  state[entity] = { ..st, acceleration: Some(acceleration) }
 }
 
 ///|
@@ -82,28 +67,9 @@ pub fn set_horizontal_acceleration(
   entity : @entity.Entity,
   horizontal_acceleration : Double
 ) -> Unit {
-  if state.get(entity) is Some(st) {
-    let acceleration = if st.acceleration is Some(a) {
-      @math.Vec2D::new(horizontal_acceleration, a.y)
-    } else {
-      @math.Vec2D::new(horizontal_acceleration, 0)
-    }
-    state[entity] = { ..st, acceleration: Some(acceleration) }
-  }
-}
-
-///|
-pub fn shift_entity(entity : @entity.Entity, dir : @math.Vec2D) -> Unit {
-  if state.get(entity) is Some(st) {
-    let new_location = st.location + dir
-    let new_hitbox = st.hitbox.shift(dir)
-    state[entity] = {
-      location: new_location,
-      hitbox: new_hitbox,
-      velocity: st.velocity,
-      acceleration: st.acceleration,
-    }
-  }
+  guard state.get(entity) is Some({ acceleration: Some(a), .. } as st)
+  let acceleration = @math.Vec2D::new(horizontal_acceleration, a.y)
+  state[entity] = { ..st, acceleration: Some(acceleration) }
 }
 
 ///|
@@ -128,10 +94,10 @@ pub fn update() -> Unit {
       new_velocity = Some(velocity + acceleration)
     }
     state[entity] = {
+      ..st,
       location: new_location,
       hitbox: new_hitbox,
       velocity: new_velocity,
-      acceleration: st.acceleration,
     }
     quadtree.val.insert(entity, new_hitbox)
   }

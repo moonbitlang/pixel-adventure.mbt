@@ -12,6 +12,8 @@ fn main {
       @math.Vec2D::new(0, @render.HEIGHT - 40),
       @math.Vec2D::new(32, 32),
     ),
+    velocity=@math.Vec2D::new(0, 0),
+    acceleration=@math.Vec2D::new(0, 0),
   )
   @state.set_player(player)
 
