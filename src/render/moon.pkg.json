@@ -1,10 +1,11 @@
 {
     "import": [
-        "peter-jerry-ye/adventure/object",
-        "peter-jerry-ye/adventure/entity",
-        "peter-jerry-ye/adventure/location",
-        "peter-jerry-ye/adventure/math",
-        "Yoorkin/rabbit-tea/dom",
-        "rami3l/js-ffi/js"
+      "peter-jerry-ye/adventure/object",
+      "peter-jerry-ye/adventure/entity",
+      "peter-jerry-ye/adventure/location",
+      "peter-jerry-ye/adventure/math",
+      "Yoorkin/rabbit-tea/dom",
+      "rami3l/js-ffi/js",
+      "peter-jerry-ye/adventure/state"
     ]
 }

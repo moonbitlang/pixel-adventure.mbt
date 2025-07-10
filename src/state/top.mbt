@@ -2,6 +2,14 @@
 let player : Ref[@entity.Entity?] = { val: None }
 
 ///|
+let game_won : Ref[Bool?] = { val: None }
+
+///|
+pub fn game_ended() -> Bool? {
+  game_won.val
+}
+
+///|
 pub fn set_player(entity : @entity.Entity) -> Unit {
   player.val = Some(entity)
 }
@@ -84,7 +92,7 @@ fn handle_input() -> Unit {
       } else {
         @location.set_horizontal_velocity(player, 0)
       }
-    Disapper => ()
+    _ => ()
   }
 }
 
@@ -165,6 +173,12 @@ fn check_collision() -> Unit {
     } else if @object.get_character(entity) is Some(Banana) {
       if !(@object.get_state(entity) is Some(Disapper)) {
         @object.enter_state(entity, Disapper)
+      }
+    } else if @object.get_character(entity) is Some(Trophy) {
+      // Handle collision with trophy
+      if !(@object.get_state(entity) is Some(Pressed)) {
+        @object.enter_state(entity, Pressed)
+        game_won.val = Some(true)
       }
     }
   }

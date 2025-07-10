@@ -109,6 +109,18 @@ fn init {
     element.set_src("/pixel_adventure/Items/Fruits/Collected.png")
     Animation::new(element, max_frame=6, loop_=false, height=32.0, width=32.0)
   }
+  sprites[(Trophy, Idle)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Items/Checkpoints/End/End (Idle).png")
+    Animation::new(element, max_frame=1, height=64.0, width=64.0)
+  }
+  sprites[(Trophy, Pressed)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src(
+      "pixel_adventure/Items/Checkpoints/End/End (Pressed) (64x64).png",
+    )
+    Animation::new(element, max_frame=8, loop_=false, height=64.0, width=64.0)
+  }
 }
 
 ///|
@@ -123,6 +135,7 @@ pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
       render_object(context, entity)
     }
   }
+  render_game_state(context)
 }
 
 ///|
@@ -155,9 +168,11 @@ fn render_character(
   // Compute next frame
   if curr_frame + 1 == sprite.max_frame {
     if !sprite.loop_ {
+      // Does not move forward. Will be reset by entering a new stage
       @object.set_stage(entity, Exit)
+    } else {
+      next_frame[entity] = 0
     }
-    next_frame[entity] = 0
   } else {
     next_frame[entity] = curr_frame + 1
   }
@@ -266,5 +281,21 @@ fn render_object(
       size.x,
       size.y,
     )
+  }
+}
+
+///|
+fn render_game_state(context : @dom.CanvasRenderingContext2D) -> Unit {
+  if @state.game_ended() is Some(result) {
+    context.save()
+    context.set_font("24px ThaleahFat")
+    if result {
+      context.set_fill_style(@js.Union3::from0("green"))
+      context.fill_text("You won!", WIDTH / 2 - 50, HEIGHT / 2)
+    } else {
+      context.set_fill_style(@js.Union3::from0("red"))
+      context.fill_text("You lost!", WIDTH / 2 - 50, HEIGHT / 2)
+    }
+    context.restore()
   }
 }

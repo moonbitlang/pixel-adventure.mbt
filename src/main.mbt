@@ -48,7 +48,7 @@ fn main {
   // add enemy
   let enemy = @entity.Entity::new()
   @object.set_character(enemy, Mushroom)
-  @object.enter_state(enemy, Idle)
+  @object.enter_state(enemy, Run)
   @object.set_direction(enemy, Left)
   @location.set_entity(
     enemy,
@@ -56,6 +56,20 @@ fn main {
     @math.HitBox::rect(
       @math.Vec2D::new(200, @render.HEIGHT - 40),
       @math.Vec2D::new(32, 32),
+    ),
+    velocity=@math.Vec2D::new(-1, 0),
+  )
+
+  // add trophy
+  let trophy = @entity.Entity::new()
+  @object.set_character(trophy, Trophy)
+  @object.enter_state(trophy, Idle)
+  @location.set_entity(
+    trophy,
+    @math.Vec2D::new(300, @render.HEIGHT - 8 - 64),
+    @math.HitBox::rect(
+      @math.Vec2D::new(300, @render.HEIGHT - 8 - 64),
+      @math.Vec2D::new(64, 64),
     ),
   )
 
