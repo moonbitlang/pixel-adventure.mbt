@@ -1,10 +1,4 @@
 ///|
-pub const WIDTH : Double = 512.0
-
-///|
-pub const HEIGHT : Double = 256.0
-
-///|
 const DEBUG_HITBOX = true
 
 ///|
@@ -140,7 +134,26 @@ fn init {
 
 ///|
 pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
-  context.clear_rect(0, 0, WIDTH, HEIGHT)
+  context.clear_rect(0, 0, @config.VIEW_PORT_WIDTH, @config.VIEW_PORT_HEIGHT)
+
+  // Compute the view port
+  let view_port = if @state.get_player() is Some(player) &&
+    @location.get_entity(player) is Some({ location, .. }) {
+    // Center the view port on the player
+    let center_x = location.x - @config.VIEW_PORT_WIDTH / 2
+    // Make sure we don't scroll past the edges of the game
+    @cmp.maximum(
+      0.0,
+      @cmp.minimum(center_x, @config.GAME_WIDTH - @config.VIEW_PORT_WIDTH),
+    )
+  } else {
+    0.0
+  }
+  // Apply the view port translation
+  context.save()
+  context.translate(-view_port, 0)
+
+  // Start rendering
   render_background(context)
   if DEBUG_QUADTREE {
     render_quadtree(context)
@@ -149,6 +162,14 @@ pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
     render_hitbox(context)
   }
   for entity in @entity.entities() {
+    // Skip entities that are outside of the view port (with safety margin of one viewport width)
+    if @location.get_entity(entity) is Some({ location, .. }) &&
+      (
+        location.x < view_port - @config.VIEW_PORT_WIDTH ||
+        location.x > view_port + @config.VIEW_PORT_WIDTH * 2
+      ) {
+      continue
+    }
     if @object.get_character(entity) is Some(_) {
       render_character(context, entity)
     }
@@ -156,6 +177,9 @@ pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
       render_object(context, entity)
     }
   }
+
+  // Restore the context to the original state
+  context.restore()
   render_game_state(context)
 }
 
@@ -248,7 +272,7 @@ fn render_background(context : @dom.CanvasRenderingContext2D) -> Unit {
   let pattern = context.create_pattern(background, "repeat")
   context.save()
   context.set_fill_style(@js.Union3::from2(pattern))
-  context.fill_rect(0, 0, WIDTH, HEIGHT)
+  context.fill_rect(0, 0, @config.GAME_WIDTH, @config.GAME_HEIGHT)
   context.restore()
 }
 
@@ -288,10 +312,18 @@ fn render_game_state(context : @dom.CanvasRenderingContext2D) -> Unit {
     context.set_font("24px ThaleahFat")
     if result {
       context.set_fill_style(@js.Union3::from0("green"))
-      context.fill_text("You won!", WIDTH / 2 - 50, HEIGHT / 2)
+      context.fill_text(
+        "You won!",
+        @config.VIEW_PORT_WIDTH / 2 - 50,
+        @config.VIEW_PORT_HEIGHT / 2,
+      )
     } else {
       context.set_fill_style(@js.Union3::from0("red"))
-      context.fill_text("You lost!", WIDTH / 2 - 50, HEIGHT / 2)
+      context.fill_text(
+        "You lost!",
+        @config.VIEW_PORT_WIDTH / 2 - 50,
+        @config.VIEW_PORT_HEIGHT / 2,
+      )
     }
     context.restore()
   }

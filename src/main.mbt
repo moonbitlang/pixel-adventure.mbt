@@ -7,9 +7,9 @@ fn main {
   @object.set_direction(player, Right)
   @location.set_entity(
     player,
-    @math.Vec2D::new(0, @render.HEIGHT - 40),
+    @math.Vec2D::new(0, @config.GAME_HEIGHT - 40),
     @math.HitBox::rect(
-      @math.Vec2D::new(0, @render.HEIGHT - 40),
+      @math.Vec2D::new(0, @config.GAME_HEIGHT - 40),
       @math.Vec2D::new(32, 32),
     ),
     velocity=@math.Vec2D::new(0, 0),
@@ -17,7 +17,7 @@ fn main {
   @state.set_player(player)
 
   // add floor
-  for i = 0; i < @render.WIDTH.to_int() / 16 + 1; i = i + 1 {
+  for i = 0; i < @config.GAME_WIDTH.to_int() / 16 + 1; i = i + 1 {
     let terrain = @entity.Entity::new()
     @object.set_object(
       terrain,
@@ -25,9 +25,9 @@ fn main {
     )
     @location.set_entity(
       terrain,
-      @math.Vec2D::new(i.to_double() * 16, @render.HEIGHT - 8),
+      @math.Vec2D::new(i.to_double() * 16, @config.GAME_HEIGHT - 8),
       @math.HitBox::rect(
-        @math.Vec2D::new(i.to_double() * 16, @render.HEIGHT - 8),
+        @math.Vec2D::new(i.to_double() * 16, @config.GAME_HEIGHT - 8),
         @math.Vec2D::new(16, 8),
       ),
     )
@@ -42,9 +42,9 @@ fn main {
     )
     @location.set_entity(
       terrain,
-      @math.Vec2D::new(100 + i.to_double() * 16, @render.HEIGHT - 50),
+      @math.Vec2D::new(100 + i.to_double() * 16, @config.GAME_HEIGHT - 50),
       @math.HitBox::rect(
-        @math.Vec2D::new(100 + i.to_double() * 16, @render.HEIGHT - 50),
+        @math.Vec2D::new(100 + i.to_double() * 16, @config.GAME_HEIGHT - 50),
         @math.Vec2D::new(16, 8),
       ),
     )
@@ -57,10 +57,10 @@ fn main {
   @object.set_direction(enemy, Left)
   @location.set_entity(
     enemy,
-    @math.Vec2D::new(200, @render.HEIGHT - 40),
+    @math.Vec2D::new(200, @config.GAME_HEIGHT - 40),
     @math.HitBox::rect(
-      @math.Vec2D::new(200, @render.HEIGHT - 40),
-      @math.Vec2D::new(32, 32),
+      @math.Vec2D::new(200, @config.GAME_HEIGHT - 28),
+      @math.Vec2D::new(32, 20),
     ),
     velocity=@math.Vec2D::new(-1, 0),
   )
@@ -72,10 +72,10 @@ fn main {
   @object.set_direction(enemy, Left)
   @location.set_entity(
     enemy,
-    @math.Vec2D::new(200, @render.HEIGHT - 120),
+    @math.Vec2D::new(200, @config.GAME_HEIGHT - 120),
     @math.HitBox::rect(
-      @math.Vec2D::new(200, @render.HEIGHT - 120),
-      @math.Vec2D::new(32, 32),
+      @math.Vec2D::new(200, @config.GAME_HEIGHT - 108),
+      @math.Vec2D::new(32, 20),
     ),
     velocity=@math.Vec2D::new(-1, 0),
   )
@@ -86,9 +86,9 @@ fn main {
   @object.enter_state(trophy, Idle)
   @location.set_entity(
     trophy,
-    @math.Vec2D::new(300, @render.HEIGHT - 8 - 64),
+    @math.Vec2D::new(300, @config.GAME_HEIGHT - 8 - 64),
     @math.HitBox::rect(
-      @math.Vec2D::new(300, @render.HEIGHT - 8 - 64),
+      @math.Vec2D::new(300, @config.GAME_HEIGHT - 8 - 64),
       @math.Vec2D::new(64, 64),
     ),
   )

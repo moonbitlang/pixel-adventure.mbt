@@ -22,6 +22,11 @@ pub fn set_player(entity : @entity.Entity) -> Unit {
 }
 
 ///|
+pub fn get_player() -> @entity.Entity? {
+  player.val
+}
+
+///|
 pub fn get_score() -> Int {
   score.val
 }

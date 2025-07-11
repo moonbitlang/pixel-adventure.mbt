@@ -9,6 +9,7 @@
     "peter-jerry-ye/adventure/render",
     "Yoorkin/rabbit-tea/dom",
     "rami3l/js-ffi/js",
-    "peter-jerry-ye/adventure/state"
+    "peter-jerry-ye/adventure/state",
+    "peter-jerry-ye/adventure/config"
   ]
 }

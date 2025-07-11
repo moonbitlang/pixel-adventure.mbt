@@ -1,15 +1,13 @@
 ///|
-const WIDTH = 512.0
-
-///|
-const HEIGHT = 256.0
-
-///|
 const MAX_DEPTH = 5
 
 ///|
 pub let quadtree : Ref[QuadTree] = {
-  val: QuadTree::new(@math.Vec2D::new(0, 0), @math.Vec2D::new(WIDTH, HEIGHT), 0),
+  val: QuadTree::new(
+    @math.Vec2D::new(0, 0),
+    @math.Vec2D::new(@config.GAME_WIDTH, @config.GAME_HEIGHT),
+    0,
+  ),
 }
 
 ///|

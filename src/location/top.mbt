@@ -67,14 +67,14 @@ pub fn update() -> Unit {
   grounded.clear()
   quadtree.val = QuadTree::new(
     @math.Vec2D::new(0, 0),
-    @math.Vec2D::new(WIDTH, HEIGHT),
+    @math.Vec2D::new(@config.GAME_WIDTH, @config.GAME_HEIGHT),
     0,
   )
 
   // static objects
   let static_quadtree = QuadTree::new(
     @math.Vec2D::new(0, 0),
-    @math.Vec2D::new(WIDTH, HEIGHT),
+    @math.Vec2D::new(@config.GAME_WIDTH, @config.GAME_HEIGHT),
     0,
   )
   for entity, st in state {
