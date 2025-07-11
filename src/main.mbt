@@ -34,18 +34,22 @@ fn main {
     )
   }
 
-  // add fruit
-  let fruit = @entity.Entity::new()
-  @object.set_character(fruit, Banana)
-  @object.enter_state(fruit, Idle)
-  @location.set_entity(
-    fruit,
-    @math.Vec2D::new(100, @render.HEIGHT - 40),
-    @math.HitBox::rect(
-      @math.Vec2D::new(100, @render.HEIGHT - 40),
-      @math.Vec2D::new(32, 32),
-    ),
-  )
+  // add floor in the air
+  for i = 0; i < 10; i = i + 1 {
+    let terrain = @entity.Entity::new()
+    @object.set_object(
+      terrain,
+      Terrain(offset=@math.Vec2D::new(16, 0), size=@math.Vec2D::new(16, 8)),
+    )
+    @location.set_entity(
+      terrain,
+      @math.Vec2D::new(100 + i.to_double() * 16, @render.HEIGHT - 50),
+      @math.HitBox::rect(
+        @math.Vec2D::new(100 + i.to_double() * 16, @render.HEIGHT - 50),
+        @math.Vec2D::new(16, 8),
+      ),
+    )
+  }
 
   // add enemy
   let enemy = @entity.Entity::new()
@@ -76,7 +80,7 @@ fn main {
   )
 
   // move the player around
-  @external.schedule_with_fixed_interval(1000 / 500, () => {
+  @external.schedule_with_fixed_interval(1000 / 100, () => {
     @state.update()
     @location.update()
   })

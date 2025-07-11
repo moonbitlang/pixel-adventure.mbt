@@ -15,7 +15,7 @@ pub fn set_player(entity : @entity.Entity) -> Unit {
 }
 
 ///|
-const JUMP_V = -2.0
+const JUMP_V = -2.5
 
 ///|
 const RUN_V = 1.0
@@ -104,7 +104,7 @@ fn check_state() -> Unit {
   }
   guard @object.get_state(player) is Some(state)
   guard @object.get_stage(player) is Some(stage)
-  if state is Jump && y > 0 {
+  if state != Hit && y > 0 {
     @object.enter_state(player, Fall)
   } else if state is Hit && stage is Exit {
     if y < 0 {
@@ -144,26 +144,27 @@ fn check_collision() -> Unit {
   guard player.val is Some(player) else { return }
   guard @object.get_state(player) is Some(state)
   let collisions = @location.get_collision(player)
-  // By default, player has gravity
-  @location.set_vertical_acceleration(player, GRAVITY_ACC)
-  for collision in collisions {
-    let (entity, direction) = collision
-    if @object.get_object(entity) is Some(Terrain(_)) {
-      // is grounded, remove gravity
-      @location.set_vertical_acceleration(player, 0)
-      @location.set_vertical_velocity(player, 0)
-      // has friction, remove velocity
-      @location.set_horizontal_velocity(player, 0)
-      if state is Fall {
-        @object.enter_state(player, Idle)
-      }
+  // Handle gravity
+  if @location.is_grounded(player) {
+    // is grounded, remove gravity
+    @location.set_vertical_acceleration(player, 0)
+    @location.set_vertical_velocity(player, 0)
+    // has friction, remove velocity
+    @location.set_horizontal_velocity(player, 0)
+    if state is Fall {
+      @object.enter_state(player, Idle)
     }
+  } else {
+    @location.set_vertical_acceleration(player, GRAVITY_ACC)
+  }
+  for collision in collisions {
+    let (entity, collision_info) = collision
     if @object.get_character(entity) is Some(Mushroom) {
       // Handle collision if none is already in Hit or Disapper state
       if !(@object.get_state(entity) is Some(Hit | Disapper)) &&
         !(@object.get_state(player) is Some(Hit)) {
         // Collision with a character, handle it
-        if direction.y < 0 {
+        if collision_info.direction.y < 0 {
           @object.enter_state(entity, Hit)
         } else {
           @object.enter_state(player, Hit)

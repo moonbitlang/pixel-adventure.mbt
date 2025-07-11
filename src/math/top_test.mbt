@@ -33,6 +33,9 @@ test "HitBox rect creation and intersection" {
     @math.Vec2D::new(20.0, 20.0),
     @math.Vec2D::new(5.0, 5.0),
   )
-  inspect(@math.HitBox::intersects(rect1, rect2), content="Some({x: 0, y: 1})")
+  inspect(
+    @math.HitBox::intersects(rect1, rect2),
+    content="Some({direction: {x: 0, y: 1}, depth: 5})",
+  )
   inspect(@math.HitBox::intersects(rect1, rect3), content="None")
 }

@@ -15,7 +15,7 @@ pub let quadtree : Ref[QuadTree] = {
 ///|
 pub fn get_collision(
   entity : @entity.Entity
-) -> Map[@entity.Entity, @math.Vec2D] {
+) -> Map[@entity.Entity, @math.CollisionInfo] {
   state
   .get(entity)
   .map(st => quadtree.val
