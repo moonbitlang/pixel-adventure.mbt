@@ -23,14 +23,22 @@ const RUN_V = 1.0
 ///|
 pub fn update() -> Unit {
   check_collision()
-  check_state()
+  check_transition()
   handle_input()
 }
 
 ///|
+/// Check if the player is in a valid state
 fn handle_input() -> Unit {
   guard player.val is Some(player) else { return }
   guard @object.get_state(player) is Some(state)
+  // Special handling for character
+  guard @location.get_entity(player) is Some({ velocity: Some({ y, .. }), .. })
+  if y > 0 && state != Hit {
+    @object.enter_state(player, Fall)
+  }
+
+  // Handle input
   match state {
     Idle =>
       if @external.is_pressed(ArrowLeft) {
@@ -101,49 +109,48 @@ fn handle_input() -> Unit {
 }
 
 ///|
-fn check_state() -> Unit {
-  guard player.val is Some(player) else { return }
-  guard @location.get_entity(player) is Some({ velocity: Some({ x, y }), .. }) else {
-    return
-  }
-  guard @object.get_state(player) is Some(state)
-  guard @object.get_stage(player) is Some(stage)
-  if state != Hit && y > 0 {
-    @object.enter_state(player, Fall)
-  } else if state is Hit && stage is Exit {
-    if y < 0 {
-      @object.enter_state(player, Jump)
-    } else if y > 0 {
-      @object.enter_state(player, Fall)
-    } else if x > 0 {
-      @object.enter_state(player, Run)
-      @object.set_direction(player, Right)
-    } else if x < 0 {
-      @object.enter_state(player, Run)
-      @object.set_direction(player, Left)
-    } else {
-      @object.enter_state(player, Idle)
-    }
-  }
+/// Check the transition based on animation
+fn check_transition() -> Unit {
   for entity in @entity.entities() {
-    if @object.get_character(entity) is Some(Mushroom) {
-      if @object.get_state(entity) is Some(Hit) &&
-        @object.get_stage(entity) is Some(Exit) {
-        @object.enter_state(entity, Disapper)
-      } else if @object.get_state(entity) is Some(Disapper) &&
-        @object.get_stage(entity) is Some(Exit) {
-        @entity.remove_entities(entity)
+    guard @object.get_stage(entity) is Some(Exit) else { continue }
+    match @object.get_character(entity) {
+      Some(Mushroom) =>
+        if @object.get_state(entity) is Some(Hit) {
+          @object.enter_state(entity, Disapper)
+        } else if @object.get_state(entity) is Some(Disapper) {
+          @entity.remove_entities(entity)
+        }
+      Some(Banana) =>
+        if @object.get_state(entity) is Some(Disapper) {
+          @entity.remove_entities(entity)
+        }
+      Some(MaskDude) => {
+        let player = entity
+        if @object.get_state(player) is Some(Hit) {
+          guard @location.get_entity(player)
+            is Some({ velocity: Some({ x, y }), .. })
+          if y < 0 {
+            @object.enter_state(player, Jump)
+          } else if y > 0 {
+            @object.enter_state(player, Fall)
+          } else if x > 0 {
+            @object.enter_state(player, Run)
+            @object.set_direction(player, Right)
+          } else if x < 0 {
+            @object.enter_state(player, Run)
+            @object.set_direction(player, Left)
+          } else {
+            @object.enter_state(player, Idle)
+          }
+        }
       }
-    } else if @object.get_character(entity) is Some(Banana) {
-      if @object.get_state(entity) is Some(Disapper) &&
-        @object.get_stage(entity) is Some(Exit) {
-        @entity.remove_entities(entity)
-      }
+      _ => ()
     }
   }
 }
 
 ///|
+/// Check for collisions with other entities
 fn check_collision() -> Unit {
   guard player.val is Some(player) else { return }
   let collisions = @location.get_collision(player)
