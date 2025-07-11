@@ -5,11 +5,16 @@ let state : Map[@entity.Entity, State] = {}
 let grounded : Map[@entity.Entity, Bool] = {}
 
 ///|
+const GRAVITY_ACC = 0.05
+
+///|
 pub struct State {
   location : @math.Vec2D
   hitbox : @math.HitBox
   velocity : @math.Vec2D?
-  acceleration : @math.Vec2D?
+  /// The acceleration of the entity, e.g. gravity
+  /// Currently, the acceleration is computed internally
+  priv acceleration : @math.Vec2D?
 }
 
 ///|
@@ -17,16 +22,12 @@ pub fn set_entity(
   entity : @entity.Entity,
   location : @math.Vec2D,
   hitbox : @math.HitBox,
-  velocity? : @math.Vec2D,
-  acceleration? : @math.Vec2D
+  velocity? : @math.Vec2D
 ) -> Unit {
   if state.get(entity) is None {
     @entity.on_remove(entity, () => state.remove(entity))
   }
-  if acceleration is Some(_) && velocity is None {
-    abort("Cannot set acceleration without velocity")
-  }
-  state[entity] = { location, hitbox, velocity, acceleration }
+  state[entity] = { location, hitbox, velocity, acceleration: None }
   quadtree.val.insert(entity, hitbox)
 }
 
@@ -53,26 +54,6 @@ pub fn set_horizontal_velocity(
   guard state.get(entity) is Some({ velocity: Some(v), .. } as st)
   let velocity = @math.Vec2D::new(horizontal_velocity, v.y)
   state[entity] = { ..st, velocity: Some(velocity) }
-}
-
-///|
-pub fn set_vertical_acceleration(
-  entity : @entity.Entity,
-  vertical_acceleration : Double
-) -> Unit {
-  guard state.get(entity) is Some({ acceleration: Some(a), .. } as st)
-  let acceleration = @math.Vec2D::new(a.x, vertical_acceleration)
-  state[entity] = { ..st, acceleration: Some(acceleration) }
-}
-
-///|
-pub fn set_horizontal_acceleration(
-  entity : @entity.Entity,
-  horizontal_acceleration : Double
-) -> Unit {
-  guard state.get(entity) is Some({ acceleration: Some(a), .. } as st)
-  let acceleration = @math.Vec2D::new(horizontal_acceleration, a.y)
-  state[entity] = { ..st, acceleration: Some(acceleration) }
 }
 
 ///|
@@ -156,10 +137,12 @@ pub fn update() -> Unit {
           )
         }
       }
+
+      // reset velocity
       if collision_info.direction.y > 0 && new_velocity.y >= 0 {
         grounded[entity] = true
+        new_velocity = @math.Vec2D::new(new_velocity.x, 0)
       } else if collision_info.direction.y < 0 && new_velocity.y < 0 {
-        // If the collision is from above, reset vertical velocity
         new_velocity = @math.Vec2D::new(new_velocity.x, 0)
       }
     }
@@ -168,11 +151,18 @@ pub fn update() -> Unit {
       new_hitbox,
       -@math.Vec2D::new(move_x, move_y),
     )
+    // currently, the only acceleration comes from gravity
+    let new_acceleration = if @object.has_gravity(entity) &&
+      grounded.get(entity) is None {
+      Some(@math.Vec2D::new(0, GRAVITY_ACC))
+    } else {
+      None
+    }
     state[entity] = {
-      ..st,
       location: new_location,
       hitbox: new_hitbox,
       velocity: Some(new_velocity),
+      acceleration: new_acceleration,
     }
     quadtree.val.insert(entity, new_hitbox)
   }

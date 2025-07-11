@@ -13,7 +13,6 @@ fn main {
       @math.Vec2D::new(32, 32),
     ),
     velocity=@math.Vec2D::new(0, 0),
-    acceleration=@math.Vec2D::new(0, 0),
   )
   @state.set_player(player)
 
@@ -61,6 +60,21 @@ fn main {
     @math.Vec2D::new(200, @render.HEIGHT - 40),
     @math.HitBox::rect(
       @math.Vec2D::new(200, @render.HEIGHT - 40),
+      @math.Vec2D::new(32, 32),
+    ),
+    velocity=@math.Vec2D::new(-1, 0),
+  )
+
+  // add enemy in the air
+  let enemy = @entity.Entity::new()
+  @object.set_character(enemy, Mushroom)
+  @object.enter_state(enemy, Run)
+  @object.set_direction(enemy, Left)
+  @location.set_entity(
+    enemy,
+    @math.Vec2D::new(200, @render.HEIGHT - 120),
+    @math.HitBox::rect(
+      @math.Vec2D::new(200, @render.HEIGHT - 120),
       @math.Vec2D::new(32, 32),
     ),
     velocity=@math.Vec2D::new(-1, 0),

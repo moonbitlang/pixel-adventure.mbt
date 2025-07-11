@@ -118,3 +118,8 @@ pub fn set_object(entity : @entity.Entity, obj : Object) -> Unit {
 pub fn get_object(entity : @entity.Entity) -> Object? {
   object.get(entity)
 }
+
+///|
+pub fn has_gravity(entity : @entity.Entity) -> Bool {
+  get_character(entity) is Some(MaskDude | Mushroom)
+}
