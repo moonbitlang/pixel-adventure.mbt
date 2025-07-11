@@ -2,6 +2,12 @@
 let player : Ref[@entity.Entity?] = { val: None }
 
 ///|
+let hp : Ref[Int] = { val: 1 }
+
+///|
+let score : Ref[Int] = { val: 0 }
+
+///|
 let game_won : Ref[Bool?] = { val: None }
 
 ///|
@@ -11,7 +17,18 @@ pub fn game_ended() -> Bool? {
 
 ///|
 pub fn set_player(entity : @entity.Entity) -> Unit {
+  @entity.on_remove(entity, () => player.val = None)
   player.val = Some(entity)
+}
+
+///|
+pub fn get_score() -> Int {
+  score.val
+}
+
+///|
+pub fn get_hp() -> Int {
+  hp.val
 }
 
 ///|
@@ -34,7 +51,7 @@ fn handle_input() -> Unit {
   guard @object.get_state(player) is Some(state)
   // Special handling for character
   guard @location.get_entity(player) is Some({ velocity: Some({ y, .. }), .. })
-  if y > 0 && state != Hit {
+  if y > 0 && !(state is (Hit | Disapper)) {
     @object.enter_state(player, Fall)
   }
 
@@ -127,6 +144,11 @@ fn check_transition() -> Unit {
       Some(MaskDude) => {
         let player = entity
         if @object.get_state(player) is Some(Hit) {
+          guard hp.val != 0 else {
+            @object.enter_state(player, Disapper)
+            game_won.val = Some(false)
+            continue
+          }
           guard @location.get_entity(player)
             is Some({ velocity: Some({ x, y }), .. })
           if y < 0 {
@@ -142,6 +164,8 @@ fn check_transition() -> Unit {
           } else {
             @object.enter_state(player, Idle)
           }
+        } else if @object.get_state(player) is Some(Disapper) {
+          @entity.remove_entities(player)
         }
       }
       _ => ()
@@ -159,12 +183,18 @@ fn check_collision() -> Unit {
     if @object.get_character(entity) is Some(Mushroom) {
       // Handle collision if none is already in Hit or Disapper state
       if !(@object.get_state(entity) is Some(Hit | Disapper)) &&
-        !(@object.get_state(player) is Some(Hit)) {
+        !(@object.get_state(player) is Some(Hit | Disapper)) {
         // Collision with a character, handle it
         if collision_info.direction.y < 0 {
+          // Player is above the mushroom, so hit it
           @object.enter_state(entity, Hit)
+          score.val += 100
         } else {
+          // Player is below the mushroom, so hit the player
           @object.enter_state(player, Hit)
+          if game_won.val is None {
+            hp.val -= 1
+          }
         }
       }
     } else if @object.get_character(entity) is Some(Banana) {

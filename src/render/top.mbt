@@ -75,6 +75,18 @@ fn init {
     )
     Animation::new(element, max_frame=12, height=32.0, width=32.0)
   }
+  sprites[(MaskDude, Disapper)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Main Characters/Desappearing (96x96).png")
+    Animation::new(
+      element,
+      max_frame=7,
+      loop_=false,
+      height=96.0,
+      width=96,
+      offset=@math.Vec2D::new(-32, -32),
+    )
+  }
   sprites[(Mushroom, Idle)] = {
     let element = @dom.HTMLImageElement::new()
     element.set_src("/pixel_adventure/Enemies/Mushroom/Idle (32x32).png")
@@ -134,7 +146,7 @@ pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
     render_quadtree(context)
   }
   if DEBUG_HITBOX {
-    render_hitobx(context)
+    render_hitbox(context)
   }
   for entity in @entity.entities() {
     if @object.get_character(entity) is Some(_) {
@@ -197,7 +209,10 @@ fn render_character(
     )
     context.scale(-1, 1)
   } else {
-    context.translate(location.x, location.y)
+    context.translate(
+      location.x + sprite.offset.x,
+      location.y + sprite.offset.y,
+    )
   }
   context.draw_image_with_src_and_dst_size(
     sprite.sprite |> @js.Value::cast_from |> @js.Value::cast,
@@ -280,6 +295,12 @@ fn render_game_state(context : @dom.CanvasRenderingContext2D) -> Unit {
     }
     context.restore()
   }
+  context.save()
+  context.set_font("20px ThaleahFat")
+  context.set_fill_style(@js.Union3::from0("black"))
+  context.fill_text("HP : \{@state.get_hp()}", 20, 20)
+  context.fill_text("Score : \{@state.get_score()}", 400, 20)
+  context.restore()
 }
 
 ///|
@@ -303,7 +324,7 @@ fn render_quadtree(context : @dom.CanvasRenderingContext2D) -> Unit {
 }
 
 ///|
-fn render_hitobx(context : @dom.CanvasRenderingContext2D) -> Unit {
+fn render_hitbox(context : @dom.CanvasRenderingContext2D) -> Unit {
   context.save()
   context.set_stroke_style(@js.Union3::from0("red"))
   for entity in @entity.entities() {
