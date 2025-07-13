@@ -3,6 +3,7 @@ pub(all) enum Character {
   MaskDude
   Mushroom
   Banana
+  RockHead
   Trophy
 } derive(Eq, Hash)
 
@@ -20,6 +21,11 @@ pub(all) enum State {
   Run
   Disapper
   Pressed
+  Blink
+  BottomHit
+  RightHit
+  TopHit
+  LeftHit
 } derive(Eq, Hash, Show)
 
 ///|

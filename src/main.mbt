@@ -44,6 +44,21 @@ fn main {
     )
   }
 
+  // add a rockhead
+  let rockhead = @entity.Entity::new()
+  @object.set_character(rockhead, RockHead)
+  @object.enter_state(rockhead, Idle)
+  @object.set_direction(rockhead, Right)
+  @location.set_entity(
+    rockhead,
+    @math.Vec2D::new(200, @config.GAME_HEIGHT - 200),
+    @math.HitBox::rect(
+      @math.Vec2D::new(200, @config.GAME_HEIGHT - 200),
+      @math.Vec2D::new(32, 32),
+    ),
+    velocity=@math.Vec2D::new(0, 0),
+  )
+
   // move the player around
   @external.schedule_with_fixed_interval(1000 / 100, () => {
     @state.update()

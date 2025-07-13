@@ -47,6 +47,7 @@ pub fn update() -> Unit {
   check_collision()
   check_transition()
   handle_input()
+  check_enemies()
 }
 
 ///|
@@ -146,6 +147,10 @@ fn check_transition() -> Unit {
         if @object.get_state(entity) is Some(Disapper) {
           @entity.remove_entities(entity)
         }
+      Some(RockHead) =>
+        if @object.get_state(entity) is Some(Blink) {
+          @location.set_vertical_velocity(entity, 2)
+        }
       Some(MaskDude) => {
         let player = entity
         if @object.get_state(player) is Some(Hit) {
@@ -212,6 +217,44 @@ fn check_collision() -> Unit {
         @object.enter_state(entity, Pressed)
         game_won.val = Some(true)
       }
+    } else if @object.get_character(entity) is Some(RockHead) {
+      guard @location.get_entity(entity)
+        is Some({ velocity: Some({ x, y }), .. })
+      // Check if the rockhead is moving and the contact happens
+      if !(@object.get_state(player) is Some(Hit | Disapper)) &&
+        (
+          (x < 0 && collision_info.direction.x < 0) ||
+          (x > 0 && collision_info.direction.x > 0) ||
+          (y < 0 && collision_info.direction.y < 0) ||
+          (y > 0 && collision_info.direction.y > 0)
+        ) {
+        @object.enter_state(player, Hit)
+        if game_won.val is None {
+          hp.val -= 1
+        }
+      }
+    }
+  }
+}
+
+///|
+fn check_enemies() -> Unit {
+  guard player.val is Some(player) else { return }
+  for entity in @entity.entities() {
+    // Currently only check RockHead
+    guard @object.get_character(entity) is Some(RockHead) else { continue }
+    if @object.get_state(entity) is Some(Idle) {
+      guard @location.get_entity(entity) is Some({ location: { x, .. }, .. })
+      guard @location.get_entity(player)
+        is Some({ location: { x: px, .. }, .. })
+      if (px - x).abs() < 64 {
+        if @object.get_state(entity) is Some(Idle) {
+          @object.enter_state(entity, Blink)
+        }
+      }
+    } else if @location.is_grounded(entity) &&
+      @object.get_state(entity) is Some(Blink) {
+      @object.enter_state(entity, BottomHit)
     }
   }
 }

@@ -130,6 +130,77 @@ fn init {
     )
     Animation::new(element, max_frame=8, loop_=false, height=64.0, width=64.0)
   }
+  sprites[(RockHead, Idle)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Traps/Rock Head/Idle.png")
+    Animation::new(
+      element,
+      max_frame=1,
+      height=42.0,
+      width=42.0,
+      offset=@math.Vec2D::new(-5, -5),
+    )
+  }
+  sprites[(RockHead, Blink)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Traps/Rock Head/Blink (42x42).png")
+    Animation::new(
+      element,
+      max_frame=4,
+      loop_=false,
+      height=42.0,
+      width=42.0,
+      offset=@math.Vec2D::new(-5, -5),
+    )
+  }
+  sprites[(RockHead, BottomHit)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Traps/Rock Head/Bottom Hit (42x42).png")
+    Animation::new(
+      element,
+      max_frame=4,
+      height=42.0,
+      width=42.0,
+      loop_=false,
+      offset=@math.Vec2D::new(-5, -5),
+    )
+  }
+  sprites[(RockHead, LeftHit)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Traps/Rock Head/Left Hit (42x42).png")
+    Animation::new(
+      element,
+      max_frame=4,
+      height=42.0,
+      width=42.0,
+      loop_=false,
+      offset=@math.Vec2D::new(-5, -5),
+    )
+  }
+  sprites[(RockHead, RightHit)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Traps/Rock Head/Right Hit (42x42).png")
+    Animation::new(
+      element,
+      max_frame=4,
+      height=42.0,
+      width=42.0,
+      loop_=false,
+      offset=@math.Vec2D::new(-5, -5),
+    )
+  }
+  sprites[(RockHead, TopHit)] = {
+    let element = @dom.HTMLImageElement::new()
+    element.set_src("/pixel_adventure/Traps/Rock Head/Top Hit (42x42).png")
+    Animation::new(
+      element,
+      max_frame=4,
+      height=42.0,
+      width=42.0,
+      loop_=false,
+      offset=@math.Vec2D::new(-5, -5),
+    )
+  }
 }
 
 ///|
@@ -174,7 +245,7 @@ pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
       render_character(context, entity)
     }
     if @object.get_terrain(entity) is Some(_) {
-      render_object(context, entity)
+      render_terrain(context, entity)
     }
   }
 
@@ -284,7 +355,7 @@ let terrain : @dom.HTMLImageElement = {
 }
 
 ///|
-fn render_object(
+fn render_terrain(
   context : @dom.CanvasRenderingContext2D,
   entity : @entity.Entity
 ) -> Unit {
