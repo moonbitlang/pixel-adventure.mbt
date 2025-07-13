@@ -1,0 +1,49 @@
+///|
+pub fn add_player(position : @math.Vec2D) -> Unit {
+  guard player.val is None else { return }
+  let entity = @entity.Entity::new()
+  @object.set_character(entity, MaskDude)
+  @object.enter_state(entity, Idle)
+  @object.set_direction(entity, Right)
+  @location.set_entity(
+    entity,
+    position,
+    @math.HitBox::rect(
+      position + @math.Vec2D::new(2, 0),
+      @math.Vec2D::new(28, 32),
+    ),
+  )
+  player.val = Some(entity)
+  @entity.on_remove(entity, () => player.val = None)
+}
+
+///|
+pub fn add_rockhead(position : @math.Vec2D) -> Unit {
+  let rockhead = @entity.Entity::new()
+  @object.set_character(rockhead, RockHead)
+  @object.enter_state(rockhead, Idle)
+  @object.set_direction(rockhead, Right)
+  @location.set_entity(
+    rockhead,
+    position,
+    @math.HitBox::rect(position, @math.Vec2D::new(32, 32)),
+  )
+  rockheads.set(rockhead, RockHeadAI::new(position, Down))
+  @entity.on_remove(rockhead, () => rockheads.remove(rockhead))
+}
+
+///|
+pub fn add_mushroom(position : @math.Vec2D) -> Unit {
+  let mushroom = @entity.Entity::new()
+  @object.set_character(mushroom, Mushroom)
+  @object.enter_state(mushroom, Idle)
+  @object.set_direction(mushroom, Right)
+  @location.set_entity(
+    mushroom,
+    position,
+    @math.HitBox::rect(
+      position + @math.Vec2D::new(0, 12),
+      @math.Vec2D::new(32, 20),
+    ),
+  )
+}

@@ -151,7 +151,15 @@ fn check_transition() -> Unit {
         }
       Some(RockHead) =>
         if @object.get_state(entity) is Some(Blink) {
-          @location.set_vertical_velocity(entity, 2)
+          guard rockheads.get(entity) is Some(ai)
+          if ai.phase is Waiting {
+            ai.phase = Attacking
+          }
+        } else if @object.get_state(entity) is Some(BottomHit) {
+          guard rockheads.get(entity) is Some(ai)
+          guard ai.phase is Attacking
+          ai.phase = Resting(countdown=15)
+          @object.enter_state(entity, Idle)
         }
       Some(MaskDude) => {
         let player = entity
@@ -219,7 +227,6 @@ fn check_collision() -> Unit {
         game_won.val = Some(true)
       }
     } else if @object.get_character(entity) is Some(RockHead) {
-      println("RockHead collision")
       if !(@object.get_state(player) is Some(Hit | Disapper)) &&
         collision_info.direction.y > 0 {
         @object.enter_state(player, Hit)
@@ -233,22 +240,47 @@ fn check_collision() -> Unit {
 
 ///|
 fn check_enemies() -> Unit {
-  guard player.val is Some(player) else { return }
   for entity in @entity.entities() {
     // Currently only check RockHead
     guard @object.get_character(entity) is Some(RockHead) else { continue }
-    if @object.get_state(entity) is Some(Idle) {
-      guard @location.get_entity(entity) is Some({ location: { x, .. }, .. })
-      guard @location.get_entity(player)
-        is Some({ location: { x: px, .. }, .. })
-      if (px - x).abs() < 64 {
-        if @object.get_state(entity) is Some(Idle) {
-          @object.enter_state(entity, Blink)
+    guard rockheads.get(entity) is Some(ai) else { continue }
+    match ai.phase {
+      Waiting => {
+        guard @location.get_entity(entity) is Some({ location: { x, .. }, .. })
+        guard player.val is Some(player) else { continue }
+        guard @location.get_entity(player)
+          is Some({ location: { x: px, .. }, .. })
+        if (px - x).abs() < 64 {
+          if @object.get_state(entity) is Some(Idle) {
+            @object.enter_state(entity, Blink)
+          }
         }
       }
-    } else if @location.is_grounded(entity) &&
-      @object.get_state(entity) is Some(Blink) {
-      @object.enter_state(entity, BottomHit)
+      Attacking =>
+        if @location.is_grounded(entity) &&
+          !(@object.get_state(entity) is Some(BottomHit)) {
+          @object.enter_state(entity, BottomHit)
+        } else {
+          @location.set_vertical_velocity(entity, 2)
+        }
+      Resting(countdown~) =>
+        if countdown <= 0 {
+          ai.phase = Returning
+        } else {
+          ai.phase = Resting(countdown=countdown - 1)
+        }
+      Returning => {
+        guard @location.get_entity(entity) is Some({ location: { y, .. }, .. })
+        if ai.direction is Down {
+          if y <= ai.origin.y {
+            @object.enter_state(entity, Idle)
+            @location.set_vertical_velocity(entity, 0)
+            ai.phase = Waiting
+          } else {
+            @location.set_vertical_velocity(entity, -2)
+          }
+        }
+      }
     }
   }
 }
