@@ -140,7 +140,14 @@ pub fn collides(entity1 : @entity.Entity, entity2 : @entity.Entity) -> Bool {
     // Terrain never moves
     false
   }
-  return get_terrain(entity2) is Some(_) ||
-    character is RockHead ||
-    get_character(entity2) is Some(RockHead)
+  if character is Banana {
+    // Bananas never move
+    return false
+  }
+  if character is RockHead {
+    return get_terrain(entity2) is Some(_) ||
+      !(get_character(entity2) is Some(Banana))
+  } else {
+    get_terrain(entity2) is Some(_) || get_character(entity2) is Some(RockHead)
+  }
 }
