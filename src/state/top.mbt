@@ -56,7 +56,17 @@ fn handle_input() -> Unit {
   guard player.val is Some(player) else { return }
   guard @object.get_state(player) is Some(state)
   // Special handling for character
-  guard @location.get_entity(player) is Some({ velocity: { y, .. }, .. })
+  guard @location.get_entity(player)
+    is Some({ velocity: { y, .. }, location, .. })
+  if location.y > @config.GAME_HEIGHT {
+    if game_won.val is None {
+      game_won.val = Some(false)
+      @object.enter_state(player, Disapper)
+      hp.val = 0
+    }
+    @entity.remove_entities(player)
+    return
+  }
   if y == 0 && state is Jump {
     @object.enter_state(player, Idle)
   } else if y > 0 && !(state is (Hit | Disapper)) {
@@ -217,7 +227,10 @@ fn check_collision() -> Unit {
         }
       }
     } else if @object.get_character(entity) is Some(Banana) {
-      if !(@object.get_state(entity) is Some(Disapper)) {
+      if !(@object.get_state(entity) is Some(Disapper)) &&
+        !(@object.get_state(player) is Some(Disapper)) {
+        hp.val += 1
+        score.val += 10
         @object.enter_state(entity, Disapper)
       }
     } else if @object.get_character(entity) is Some(Trophy) {

@@ -204,11 +204,14 @@ fn init {
 }
 
 ///|
+let view_port : Ref[Double] = { val: 0.0 }
+
+///|
 pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
   context.clear_rect(0, 0, @config.VIEW_PORT_WIDTH, @config.VIEW_PORT_HEIGHT)
 
   // Compute the view port
-  let view_port = if @state.get_player() is Some(player) &&
+  view_port.val = if @state.get_player() is Some(player) &&
     @location.get_entity(player) is Some({ location, .. }) {
     // Center the view port on the player
     let center_x = location.x - @config.VIEW_PORT_WIDTH / 2
@@ -218,11 +221,11 @@ pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
       @cmp.minimum(center_x, @config.GAME_WIDTH - @config.VIEW_PORT_WIDTH),
     )
   } else {
-    0.0
+    view_port.val
   }
   // Apply the view port translation
   context.save()
-  context.translate(-view_port, 0)
+  context.translate(-view_port.val, 0)
 
   // Start rendering
   render_background(context)
@@ -236,8 +239,8 @@ pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
     // Skip entities that are outside of the view port (with safety margin of one viewport width)
     if @location.get_entity(entity) is Some({ location, .. }) &&
       (
-        location.x < view_port - @config.VIEW_PORT_WIDTH ||
-        location.x > view_port + @config.VIEW_PORT_WIDTH * 2
+        location.x < view_port.val - @config.VIEW_PORT_WIDTH ||
+        location.x > view_port.val + @config.VIEW_PORT_WIDTH * 2
       ) {
       continue
     }

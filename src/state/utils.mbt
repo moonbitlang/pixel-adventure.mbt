@@ -47,3 +47,35 @@ pub fn add_mushroom(position : @math.Vec2D) -> Unit {
     ),
   )
 }
+
+///|
+pub fn add_trophy(position : @math.Vec2D) -> Unit {
+  let trophy = @entity.Entity::new()
+  @object.set_character(trophy, Trophy)
+  @object.enter_state(trophy, Idle)
+  @object.set_direction(trophy, Right)
+  @location.set_entity(
+    trophy,
+    position,
+    @math.HitBox::rect(
+      position + @math.Vec2D::new(4, 16),
+      @math.Vec2D::new(56, 48),
+    ),
+  )
+}
+
+///|
+pub fn add_banana(position : @math.Vec2D) -> Unit {
+  let banana = @entity.Entity::new()
+  @object.set_character(banana, Banana)
+  @object.enter_state(banana, Idle)
+  @object.set_direction(banana, Right)
+  @location.set_entity(
+    banana,
+    position,
+    @math.HitBox::rect(
+      position,
+      @math.Vec2D::new(32, 32),
+    ),
+  )
+}
