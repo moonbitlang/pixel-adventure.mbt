@@ -8,6 +8,9 @@ const DEBUG_QUADTREE = true
 let next_frame : Map[@entity.Entity, UInt] = {}
 
 ///|
+let refresh_rate : UInt = @config.GAME_FPS / 20
+
+///|
 priv struct Animation {
   sprite : @dom.HTMLImageElement
   max_frame : UInt
@@ -26,7 +29,7 @@ fn Animation::new(
   width~ : Double,
   offset~ : @math.Vec2D = @math.Vec2D::new(0, 0)
 ) -> Animation {
-  { sprite, max_frame, loop_, height, width, offset }
+  { sprite, max_frame: max_frame * refresh_rate, loop_, height, width, offset }
 }
 
 ///|
@@ -314,7 +317,7 @@ fn render_character(
   }
   context.draw_image_with_src_and_dst_size(
     sprite.sprite |> @js.Value::cast_from |> @js.Value::cast,
-    sprite.width * curr_frame.to_double(),
+    sprite.width * (curr_frame / refresh_rate).to_double(),
     0,
     sprite.width,
     sprite.height,

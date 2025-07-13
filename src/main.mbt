@@ -18,7 +18,7 @@ fn main {
     .to_html_canvas_element()
     .unwrap()
   let context = canvas.get_context("2d").to0().unwrap()
-  @external.schedule_with_fixed_interval(1000 / 20, () => @render.render(
+  @external.schedule_with_fixed_interval(1000 / @config.GAME_FPS.to_double(), () => @render.render(
     context,
   ))
   |> ignore

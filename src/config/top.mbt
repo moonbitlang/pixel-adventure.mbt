@@ -9,3 +9,7 @@ pub const VIEW_PORT_WIDTH : Double = 512.0
 
 ///|
 pub const VIEW_PORT_HEIGHT : Double = 256.0
+
+///|
+/// Should be a multiple of 20
+pub const GAME_FPS : UInt = 60

@@ -7,6 +7,7 @@
     "Yoorkin/rabbit-tea/dom",
     "rami3l/js-ffi/js",
     "peter-jerry-ye/adventure/state",
-    "peter-jerry-ye/adventure/map"
+    "peter-jerry-ye/adventure/map",
+    "peter-jerry-ye/adventure/config"
   ]
 }
