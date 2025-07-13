@@ -56,8 +56,10 @@ fn handle_input() -> Unit {
   guard player.val is Some(player) else { return }
   guard @object.get_state(player) is Some(state)
   // Special handling for character
-  guard @location.get_entity(player) is Some({ velocity: Some({ y, .. }), .. })
-  if y > 0 && !(state is (Hit | Disapper)) {
+  guard @location.get_entity(player) is Some({ velocity: { y, .. }, .. })
+  if y == 0 && state is Jump {
+    @object.enter_state(player, Idle)
+  } else if y > 0 && !(state is (Hit | Disapper)) {
     @object.enter_state(player, Fall)
   }
 
@@ -159,8 +161,7 @@ fn check_transition() -> Unit {
             game_won.val = Some(false)
             continue
           }
-          guard @location.get_entity(player)
-            is Some({ velocity: Some({ x, y }), .. })
+          guard @location.get_entity(player) is Some({ velocity: { x, y }, .. })
           if y < 0 {
             @object.enter_state(player, Jump)
           } else if y > 0 {
@@ -218,16 +219,9 @@ fn check_collision() -> Unit {
         game_won.val = Some(true)
       }
     } else if @object.get_character(entity) is Some(RockHead) {
-      guard @location.get_entity(entity)
-        is Some({ velocity: Some({ x, y }), .. })
-      // Check if the rockhead is moving and the contact happens
+      println("RockHead collision")
       if !(@object.get_state(player) is Some(Hit | Disapper)) &&
-        (
-          (x < 0 && collision_info.direction.x < 0) ||
-          (x > 0 && collision_info.direction.x > 0) ||
-          (y < 0 && collision_info.direction.y < 0) ||
-          (y > 0 && collision_info.direction.y > 0)
-        ) {
+        collision_info.direction.y > 0 {
         @object.enter_state(player, Hit)
         if game_won.val is None {
           hp.val -= 1

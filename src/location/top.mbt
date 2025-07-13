@@ -11,7 +11,7 @@ const GRAVITY_ACC = 0.05
 pub struct State {
   location : @math.Vec2D
   hitbox : @math.HitBox
-  velocity : @math.Vec2D?
+  velocity : @math.Vec2D
   /// The acceleration of the entity, e.g. gravity
   /// Currently, the acceleration is computed internally
   priv acceleration : @math.Vec2D?
@@ -22,7 +22,7 @@ pub fn set_entity(
   entity : @entity.Entity,
   location : @math.Vec2D,
   hitbox : @math.HitBox,
-  velocity? : @math.Vec2D
+  velocity~ : @math.Vec2D = @math.Vec2D::new(0, 0)
 ) -> Unit {
   if state.get(entity) is None {
     @entity.on_remove(entity, () => state.remove(entity))
@@ -41,9 +41,9 @@ pub fn set_vertical_velocity(
   entity : @entity.Entity,
   vertical_velocity : Double
 ) -> Unit {
-  guard state.get(entity) is Some({ velocity: Some(v), .. } as st)
+  guard state.get(entity) is Some({ velocity: v, .. } as st)
   let velocity = @math.Vec2D::new(v.x, vertical_velocity)
-  state[entity] = { ..st, velocity: Some(velocity) }
+  state[entity] = { ..st, velocity, }
 }
 
 ///|
@@ -51,9 +51,9 @@ pub fn set_horizontal_velocity(
   entity : @entity.Entity,
   horizontal_velocity : Double
 ) -> Unit {
-  guard state.get(entity) is Some({ velocity: Some(v), .. } as st)
+  guard state.get(entity) is Some({ velocity: v, .. } as st)
   let velocity = @math.Vec2D::new(horizontal_velocity, v.y)
-  state[entity] = { ..st, velocity: Some(velocity) }
+  state[entity] = { ..st, velocity, }
 }
 
 ///|
@@ -65,37 +65,21 @@ pub fn is_grounded(entity : @entity.Entity) -> Bool {
 pub fn update() -> Unit {
   // clear old state
   grounded.clear()
+  let old_tree = quadtree.val
   quadtree.val = QuadTree::new(
     @math.Vec2D::new(0, 0),
     @math.Vec2D::new(@config.GAME_WIDTH, @config.GAME_HEIGHT),
     0,
   )
-
-  // static objects
-  let static_quadtree = QuadTree::new(
-    @math.Vec2D::new(0, 0),
-    @math.Vec2D::new(@config.GAME_WIDTH, @config.GAME_HEIGHT),
-    0,
-  )
-  for entity, st in state {
-    if @object.get_terrain(entity) is Some(_) {
-      // Static objects are not updated, just insert them into the quadtree
-      static_quadtree.insert(entity, st.hitbox)
-    }
-  }
   for entity, st in state {
     let mut new_location = st.location
     let mut new_hitbox = st.hitbox
-    guard st.velocity is Some(velocity) else {
-      quadtree.val.insert(entity, st.hitbox)
-      continue
-    }
+    let velocity = st.velocity
     // Update velcity
     let mut new_velocity = velocity
     if st.acceleration is Some(acceleration) {
-      guard st.velocity is Some(velocity)
       // Update the entity's velocity based on its acceleration
-      new_velocity = velocity + acceleration
+      new_velocity = st.velocity + acceleration
     }
 
     // Update the entity's location based on its velocity
@@ -103,37 +87,43 @@ pub fn update() -> Unit {
     new_hitbox = st.hitbox.shift(velocity)
 
     // Check for collisions with static objects
-    let collisions = static_quadtree.query(new_hitbox)
+    let collisions = old_tree.query(new_hitbox)
     let mut move_x = 0.0
     let mut move_y = 0.0
-    for static_entity in collisions {
-      guard state.get(static_entity) is Some({ hitbox: static_hitbox, .. })
+    for prev_entity in collisions {
+      guard prev_entity != entity && @object.collides(entity, prev_entity) else {
+        continue
+      }
+      guard state.get(prev_entity) is Some({ hitbox: static_hitbox, .. }) else {
+        continue
+      }
       guard @math.HitBox::intersects(new_hitbox, static_hitbox)
         is Some(collision_info) else {
         continue
       }
-      // Resolve the collision by shifting the hitbox
-      if collision_info.depth > 0.1 {
+      // Resolve the collision by shifting the hitbox, but remain intersected if possible
+      let bar = 0.01
+      if collision_info.depth > bar {
         move_x = if collision_info.direction.x > 0 {
           @cmp.maximum(
             move_x,
-            collision_info.depth * collision_info.direction.x,
+            (collision_info.depth - bar) * collision_info.direction.x,
           )
         } else {
           @cmp.minimum(
             move_x,
-            collision_info.depth * collision_info.direction.x,
+            (collision_info.depth - bar) * collision_info.direction.x,
           )
         }
         move_y = if collision_info.direction.y > 0 {
           @cmp.maximum(
             move_y,
-            collision_info.depth * collision_info.direction.y,
+            (collision_info.depth - bar) * collision_info.direction.y,
           )
         } else {
           @cmp.minimum(
             move_y,
-            collision_info.depth * collision_info.direction.y,
+            (collision_info.depth - bar) * collision_info.direction.y,
           )
         }
       }
@@ -161,7 +151,7 @@ pub fn update() -> Unit {
     state[entity] = {
       location: new_location,
       hitbox: new_hitbox,
-      velocity: Some(new_velocity),
+      velocity: new_velocity,
       acceleration: new_acceleration,
     }
     quadtree.val.insert(entity, new_hitbox)

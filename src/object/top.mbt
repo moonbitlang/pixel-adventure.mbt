@@ -129,3 +129,17 @@ pub fn get_terrain(entity : @entity.Entity) -> Terrain? {
 pub fn has_gravity(entity : @entity.Entity) -> Bool {
   get_character(entity) is Some(MaskDude | Mushroom)
 }
+
+///|
+/// Check if two entities should collide and the first entity should give way to the second
+/// 
+/// i.e. if the first entity should resolve the collision by moving out of the way
+pub fn collides(entity1 : @entity.Entity, entity2 : @entity.Entity) -> Bool {
+  guard get_character(entity1) is Some(character) else {
+    // Terrain never moves
+    false
+  }
+  return get_terrain(entity2) is Some(_) ||
+    character is RockHead ||
+    get_character(entity2) is Some(RockHead)
+}
