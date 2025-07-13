@@ -78,7 +78,7 @@ pub fn update() -> Unit {
     0,
   )
   for entity, st in state {
-    if @object.get_object(entity) is Some(Terrain(_)) {
+    if @object.get_terrain(entity) is Some(_) {
       // Static objects are not updated, just insert them into the quadtree
       static_quadtree.insert(entity, st.hitbox)
     }

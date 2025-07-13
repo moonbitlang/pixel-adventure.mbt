@@ -173,7 +173,7 @@ pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
     if @object.get_character(entity) is Some(_) {
       render_character(context, entity)
     }
-    if @object.get_object(entity) is Some(_) {
+    if @object.get_terrain(entity) is Some(_) {
       render_object(context, entity)
     }
   }
@@ -288,20 +288,21 @@ fn render_object(
   context : @dom.CanvasRenderingContext2D,
   entity : @entity.Entity
 ) -> Unit {
-  guard @object.get_object(entity) is Some(object)
+  guard @object.get_terrain(entity) is Some(object)
   guard @location.get_entity(entity) is Some({ location, .. }) else { return }
-  if object is Terrain(offset~, size~) {
-    context.draw_image_with_src_and_dst_size(
-      terrain |> @js.Value::cast_from |> @js.Value::cast,
-      offset.x,
-      offset.y,
-      size.x,
-      size.y,
-      location.x,
-      location.y,
-      size.x,
-      size.y,
-    )
+  match object {
+    Flat_Steel =>
+      context.draw_image_with_src_and_dst_size(
+        terrain |> @js.Value::cast_from |> @js.Value::cast,
+        16,
+        0,
+        16,
+        8,
+        location.x,
+        location.y,
+        16,
+        8,
+      )
   }
 }
 

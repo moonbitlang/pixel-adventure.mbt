@@ -19,10 +19,7 @@ fn main {
   // add floor
   for i = 0; i < @config.GAME_WIDTH.to_int() / 16 + 1; i = i + 1 {
     let terrain = @entity.Entity::new()
-    @object.set_object(
-      terrain,
-      Terrain(offset=@math.Vec2D::new(16, 0), size=@math.Vec2D::new(16, 8)),
-    )
+    @object.set_terrain(terrain, Flat_Steel)
     @location.set_entity(
       terrain,
       @math.Vec2D::new(i.to_double() * 16, @config.GAME_HEIGHT - 8),
@@ -36,10 +33,7 @@ fn main {
   // add floor in the air
   for i = 0; i < 10; i = i + 1 {
     let terrain = @entity.Entity::new()
-    @object.set_object(
-      terrain,
-      Terrain(offset=@math.Vec2D::new(16, 0), size=@math.Vec2D::new(16, 8)),
-    )
+    @object.set_terrain(terrain, Flat_Steel)
     @location.set_entity(
       terrain,
       @math.Vec2D::new(100 + i.to_double() * 16, @config.GAME_HEIGHT - 50),
@@ -49,49 +43,6 @@ fn main {
       ),
     )
   }
-
-  // add enemy
-  let enemy = @entity.Entity::new()
-  @object.set_character(enemy, Mushroom)
-  @object.enter_state(enemy, Run)
-  @object.set_direction(enemy, Left)
-  @location.set_entity(
-    enemy,
-    @math.Vec2D::new(200, @config.GAME_HEIGHT - 40),
-    @math.HitBox::rect(
-      @math.Vec2D::new(200, @config.GAME_HEIGHT - 28),
-      @math.Vec2D::new(32, 20),
-    ),
-    velocity=@math.Vec2D::new(-1, 0),
-  )
-
-  // add enemy in the air
-  let enemy = @entity.Entity::new()
-  @object.set_character(enemy, Mushroom)
-  @object.enter_state(enemy, Run)
-  @object.set_direction(enemy, Left)
-  @location.set_entity(
-    enemy,
-    @math.Vec2D::new(200, @config.GAME_HEIGHT - 120),
-    @math.HitBox::rect(
-      @math.Vec2D::new(200, @config.GAME_HEIGHT - 108),
-      @math.Vec2D::new(32, 20),
-    ),
-    velocity=@math.Vec2D::new(-1, 0),
-  )
-
-  // add trophy
-  let trophy = @entity.Entity::new()
-  @object.set_character(trophy, Trophy)
-  @object.enter_state(trophy, Idle)
-  @location.set_entity(
-    trophy,
-    @math.Vec2D::new(300, @config.GAME_HEIGHT - 8 - 64),
-    @math.HitBox::rect(
-      @math.Vec2D::new(300, @config.GAME_HEIGHT - 8 - 64),
-      @math.Vec2D::new(64, 64),
-    ),
-  )
 
   // move the player around
   @external.schedule_with_fixed_interval(1000 / 100, () => {

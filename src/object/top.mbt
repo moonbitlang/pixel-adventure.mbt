@@ -7,8 +7,8 @@ pub(all) enum Character {
 } derive(Eq, Hash)
 
 ///|
-pub(all) enum Object {
-  Terrain(offset~ : @math.Vec2D, size~ : @math.Vec2D)
+pub(all) enum Terrain {
+  Flat_Steel
 }
 
 ///|
@@ -104,19 +104,19 @@ pub fn get_stage(entity : @entity.Entity) -> Stage? {
 }
 
 ///|
-let object : Map[@entity.Entity, Object] = {}
+let terrain : Map[@entity.Entity, Terrain] = {}
 
 ///|
-pub fn set_object(entity : @entity.Entity, obj : Object) -> Unit {
-  if object.get(entity) is None {
-    @entity.on_remove(entity, () => object.remove(entity))
+pub fn set_terrain(entity : @entity.Entity, obj : Terrain) -> Unit {
+  if terrain.get(entity) is None {
+    @entity.on_remove(entity, () => terrain.remove(entity))
   }
-  object[entity] = obj
+  terrain[entity] = obj
 }
 
 ///|
-pub fn get_object(entity : @entity.Entity) -> Object? {
-  object.get(entity)
+pub fn get_terrain(entity : @entity.Entity) -> Terrain? {
+  terrain.get(entity)
 }
 
 ///|
