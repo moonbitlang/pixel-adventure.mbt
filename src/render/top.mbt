@@ -380,6 +380,18 @@ fn render_terrain(
         16,
         8,
       )
+    GrassBlock =>
+      context.draw_image_with_src_and_dst_size(
+        terrain |> @js.Value::cast_from |> @js.Value::cast,
+        96,
+        0,
+        48,
+        48,
+        location.x,
+        location.y,
+        16,
+        16,
+      )
   }
 }
 

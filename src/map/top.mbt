@@ -10,6 +10,27 @@ pub fn generate() -> Unit {
     if rockhead_dist > 0 {
       rockhead_dist -= 1
     }
+
+    // Generate floor in the air
+    if i > 10 &&
+      i < @config.GAME_WIDTH.to_int() / 16 - 20 &&
+      rand.int(limit=10) == 0 {
+      let width = rand.int(limit=3) + 3
+      for j = 0; j < width; j = j + 1 {
+        let terrain = @entity.Entity::new()
+        @object.set_terrain(terrain, GrassBlock)
+        @location.set_entity(
+          terrain,
+          @math.Vec2D::new((i + j).to_double() * 16, @config.GAME_HEIGHT - 60),
+          @math.HitBox::rect(
+            @math.Vec2D::new((i + j).to_double() * 16, @config.GAME_HEIGHT - 60),
+            @math.Vec2D::new(16, 16),
+          ),
+        )
+      }
+      continue
+    }
+
     // Randomly skip some floors
     if missing_size > 1 {
       missing_size -= 1
@@ -24,13 +45,13 @@ pub fn generate() -> Unit {
     }
     // Generate a floor
     let terrain = @entity.Entity::new()
-    @object.set_terrain(terrain, Flat_Steel)
+    @object.set_terrain(terrain, GrassBlock)
     @location.set_entity(
       terrain,
-      @math.Vec2D::new(i.to_double() * 16, @config.GAME_HEIGHT - 8),
+      @math.Vec2D::new(i.to_double() * 16, @config.GAME_HEIGHT - 16),
       @math.HitBox::rect(
-        @math.Vec2D::new(i.to_double() * 16, @config.GAME_HEIGHT - 8),
-        @math.Vec2D::new(16, 8),
+        @math.Vec2D::new(i.to_double() * 16, @config.GAME_HEIGHT - 16),
+        @math.Vec2D::new(16, 16),
       ),
     )
 
@@ -45,7 +66,7 @@ pub fn generate() -> Unit {
         )
       } else if rand.int(limit=20) == 0 {
         @state.add_banana(
-          @math.Vec2D::new(i.to_double() * 16, @config.GAME_HEIGHT - 40),
+          @math.Vec2D::new(i.to_double() * 16, @config.GAME_HEIGHT - 48),
         )
       }
     }
@@ -53,9 +74,9 @@ pub fn generate() -> Unit {
 
   // Generate game end trophy
   @state.add_trophy(
-    @math.Vec2D::new(@config.GAME_WIDTH - 72, @config.GAME_HEIGHT - 72),
+    @math.Vec2D::new(@config.GAME_WIDTH - 72, @config.GAME_HEIGHT - 80),
   )
 
   // Generate player
-  @state.add_player(@math.Vec2D::new(0, @config.GAME_HEIGHT - 40))
+  @state.add_player(@math.Vec2D::new(0, @config.GAME_HEIGHT - 48))
 }

@@ -10,6 +10,7 @@ pub(all) enum Character {
 ///|
 pub(all) enum Terrain {
   Flat_Steel
+  GrassBlock
 }
 
 ///|
