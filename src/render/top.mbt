@@ -330,14 +330,6 @@ fn render_character(
 }
 
 ///|
-extern "js" fn @dom.CanvasRenderingContext2D::create_pattern(
-  self : @dom.CanvasRenderingContext2D,
-  image : @dom.HTMLImageElement,
-  repetition : String
-) -> @dom.CanvasPattern =
-  #|(self, image, repetition) => self.createPattern(image, repetition)
-
-///|
 let background : @dom.HTMLImageElement = {
   let element = @dom.HTMLImageElement::new()
   element.set_src("/pixel_adventure/Background/Blue.png")
@@ -346,7 +338,7 @@ let background : @dom.HTMLImageElement = {
 
 ///|
 fn render_background(context : @dom.CanvasRenderingContext2D) -> Unit {
-  let pattern = context.create_pattern(background, "repeat")
+  let pattern = context.create_pattern(@js.Union7::from0(background), "repeat")
   context.save()
   context.set_fill_style(@js.Union3::from2(pattern))
   context.fill_rect(0, 0, @config.GAME_WIDTH, @config.GAME_HEIGHT)

@@ -13,8 +13,6 @@ fn main {
   let canvas = @dom.document()
     .get_element_by_id("canvas")
     .unwrap()
-    .to_html_element()
-    .unwrap()
     .to_html_canvas_element()
     .unwrap()
   let context = canvas.get_context("2d").to0().unwrap()

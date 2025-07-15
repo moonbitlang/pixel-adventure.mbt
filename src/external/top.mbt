@@ -112,14 +112,8 @@ pub fn on_keyup(code : Code, callback : () -> Unit) -> Unit {
 
 ///|
 fn init {
-  window
-  .to_event_target()
-  .add_event_listener("keyup", event => {
-    let keyboardEvent = event
-      .to_ui_event()
-      .unwrap()
-      .to_keyboard_event()
-      .unwrap()
+  window.add_event_listener("keyup", event => {
+    let keyboardEvent = event.to_keyboard_event().unwrap()
     let keycode = keyboardEvent.code() |> Code::from_string
     if keycode is Some(c) {
       pressedKeys.remove(c)
@@ -130,14 +124,8 @@ fn init {
       }
     }
   })
-  window
-  .to_event_target()
-  .add_event_listener("keydown", event => {
-    let keyboardEvent = event
-      .to_ui_event()
-      .unwrap()
-      .to_keyboard_event()
-      .unwrap()
+  window.add_event_listener("keydown", event => {
+    let keyboardEvent = event.to_keyboard_event().unwrap()
     let keycode = keyboardEvent.code() |> Code::from_string
     if keycode is Some(c) {
       pressedKeys.add(c)
@@ -158,7 +146,7 @@ pub fn is_pressed(code : Code) -> Bool {
 ///|
 pub fn schedule_with_fixed_interval(
   interval : Double,
-  callback : () -> Unit
+  callback : () -> Unit,
 ) -> () -> Unit {
   let lastTime = { val: 0.0 }
   let lastId = { val: 0.0 }

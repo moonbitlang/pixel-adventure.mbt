@@ -2,7 +2,7 @@
   "name": "peter-jerry-ye/adventure",
   "version": "0.1.0",
   "deps": {
-    "Yoorkin/rabbit-tea": "0.9.7"
+    "Yoorkin/rabbit-tea": "0.10.6"
   },
   "readme": "README.md",
   "repository": "",
