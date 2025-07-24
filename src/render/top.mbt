@@ -1,3 +1,17 @@
+// Copyright 2025 International Digital Economy Academy
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 ///|
 const DEBUG_HITBOX = true
 
@@ -27,7 +41,7 @@ fn Animation::new(
   loop_~ : Bool = true,
   height~ : Double,
   width~ : Double,
-  offset~ : @math.Vec2D = @math.Vec2D::new(0, 0)
+  offset~ : @math.Vec2D = @math.Vec2D::new(0, 0),
 ) -> Animation {
   { sprite, max_frame: max_frame * refresh_rate, loop_, height, width, offset }
 }
@@ -263,7 +277,7 @@ pub fn render(context : @dom.CanvasRenderingContext2D) -> Unit {
 ///|
 fn render_character(
   context : @dom.CanvasRenderingContext2D,
-  entity : @entity.Entity
+  entity : @entity.Entity,
 ) -> Unit {
   guard @object.get_character(entity) is Some(character)
   guard @object.get_state(entity) is Some(state)
@@ -355,7 +369,7 @@ let terrain : @dom.HTMLImageElement = {
 ///|
 fn render_terrain(
   context : @dom.CanvasRenderingContext2D,
-  entity : @entity.Entity
+  entity : @entity.Entity,
 ) -> Unit {
   guard @object.get_terrain(entity) is Some(object)
   guard @location.get_entity(entity) is Some({ location, .. }) else { return }

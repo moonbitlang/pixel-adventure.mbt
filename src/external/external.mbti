@@ -1,0 +1,56 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/adventure/external"
+
+// Values
+fn is_pressed(Code) -> Bool
+
+fn on_keydown(Code, () -> Unit) -> Unit
+
+fn on_keyup(Code, () -> Unit) -> Unit
+
+fn schedule_with_fixed_interval(Double, () -> Unit) -> () -> Unit
+
+// Types and methods
+pub(all) enum Code {
+  KeyA
+  KeyB
+  KeyC
+  KeyD
+  KeyE
+  KeyF
+  KeyG
+  KeyH
+  KeyI
+  KeyJ
+  KeyK
+  KeyL
+  KeyM
+  KeyN
+  KeyO
+  KeyP
+  KeyQ
+  KeyR
+  KeyS
+  KeyT
+  KeyU
+  KeyV
+  KeyW
+  KeyX
+  KeyY
+  KeyZ
+  ArrowUp
+  ArrowDown
+  ArrowLeft
+  ArrowRight
+  Space
+  Enter
+  Escape
+}
+impl Eq for Code
+impl Hash for Code
+impl Show for Code
+
+// Type aliases
+
+// Traits
+

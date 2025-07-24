@@ -1,0 +1,38 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/adventure/math"
+
+// Values
+
+// Types and methods
+pub struct CollisionInfo {
+  direction : Vec2D
+  depth : Double
+}
+impl Show for CollisionInfo
+
+pub enum HitBox {
+  Rect(position~ : Vec2D, size~ : Vec2D)
+}
+fn HitBox::get_separation_vector(Self, Self) -> Vec2D?
+fn HitBox::intersects(Self, Self) -> CollisionInfo?
+fn HitBox::rect(Vec2D, Vec2D) -> Self
+fn HitBox::resolve_collision(Self, Self) -> Self?
+fn HitBox::shift(Self, Vec2D) -> Self
+
+pub struct Vec2D {
+  x : Double
+  y : Double
+}
+fn Vec2D::magnitude(Self) -> Double
+fn Vec2D::new(Double, Double) -> Self
+fn Vec2D::normalize(Self) -> Self
+impl Add for Vec2D
+impl Mul for Vec2D
+impl Neg for Vec2D
+impl Show for Vec2D
+impl Sub for Vec2D
+
+// Type aliases
+
+// Traits
+

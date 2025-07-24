@@ -1,3 +1,17 @@
+// Copyright 2025 International Digital Economy Academy
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 ///|
 pub fn add_player(position : @math.Vec2D) -> Unit {
   guard player.val is None else { return }
@@ -73,9 +87,6 @@ pub fn add_banana(position : @math.Vec2D) -> Unit {
   @location.set_entity(
     banana,
     position,
-    @math.HitBox::rect(
-      position,
-      @math.Vec2D::new(32, 32),
-    ),
+    @math.HitBox::rect(position, @math.Vec2D::new(32, 32)),
   )
 }

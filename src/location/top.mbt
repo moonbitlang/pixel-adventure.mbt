@@ -1,3 +1,17 @@
+// Copyright 2025 International Digital Economy Academy
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 ///|
 let state : Map[@entity.Entity, State] = {}
 
@@ -22,7 +36,7 @@ pub fn set_entity(
   entity : @entity.Entity,
   location : @math.Vec2D,
   hitbox : @math.HitBox,
-  velocity~ : @math.Vec2D = @math.Vec2D::new(0, 0)
+  velocity~ : @math.Vec2D = @math.Vec2D::new(0, 0),
 ) -> Unit {
   if state.get(entity) is None {
     @entity.on_remove(entity, () => state.remove(entity))
@@ -39,7 +53,7 @@ pub fn get_entity(entity : @entity.Entity) -> State? {
 ///|
 pub fn set_vertical_velocity(
   entity : @entity.Entity,
-  vertical_velocity : Double
+  vertical_velocity : Double,
 ) -> Unit {
   guard state.get(entity) is Some({ velocity: v, .. } as st)
   let velocity = @math.Vec2D::new(v.x, vertical_velocity)
@@ -49,7 +63,7 @@ pub fn set_vertical_velocity(
 ///|
 pub fn set_horizontal_velocity(
   entity : @entity.Entity,
-  horizontal_velocity : Double
+  horizontal_velocity : Double,
 ) -> Unit {
   guard state.get(entity) is Some({ velocity: v, .. } as st)
   let velocity = @math.Vec2D::new(horizontal_velocity, v.y)

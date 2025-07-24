@@ -1,0 +1,21 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/adventure/entity"
+
+// Values
+fn entities() -> Iter[Entity]
+
+fn on_remove(Entity, () -> Unit) -> Unit
+
+fn remove_entities(Entity) -> Unit
+
+// Types and methods
+type Entity
+fn Entity::new() -> Self
+impl Eq for Entity
+impl Hash for Entity
+impl Show for Entity
+
+// Type aliases
+
+// Traits
+

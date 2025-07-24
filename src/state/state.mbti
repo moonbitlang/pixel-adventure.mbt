@@ -1,0 +1,37 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/adventure/state"
+
+import(
+  "peter-jerry-ye/adventure/entity"
+  "peter-jerry-ye/adventure/math"
+)
+
+// Values
+fn add_banana(@math.Vec2D) -> Unit
+
+fn add_mushroom(@math.Vec2D) -> Unit
+
+fn add_player(@math.Vec2D) -> Unit
+
+fn add_rockhead(@math.Vec2D) -> Unit
+
+fn add_trophy(@math.Vec2D) -> Unit
+
+fn game_ended() -> Bool?
+
+fn get_hp() -> Int
+
+fn get_player() -> @entity.Entity?
+
+fn get_score() -> Int
+
+fn set_player(@entity.Entity) -> Unit
+
+fn update() -> Unit
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
