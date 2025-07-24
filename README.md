@@ -12,9 +12,7 @@ dangers, and reach the trophy at the end of the level!
 
 ### Controls
 
-- **Arrow Keys** or **WASD**: Move left/right
-- **Space/Up Arrow**: Jump
-- **ESC**: Pause/Menu
+- **Arrow Keys**: Move left/move right/jump
 
 ### Objective
 
