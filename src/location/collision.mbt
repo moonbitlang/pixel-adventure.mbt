@@ -131,3 +131,4 @@ fn QuadTree::query(
   }
   results
 }
+

@@ -16,7 +16,7 @@
 let player : Ref[@entity.Entity?] = { val: None }
 
 ///|
-let hp : Ref[Int] = { val: 1 }
+let hp : Ref[Int] = { val: 5 }
 
 ///|
 let score : Ref[Int] = { val: 0 }
@@ -175,15 +175,10 @@ fn check_transition() -> Unit {
         }
       Some(RockHead) =>
         if @object.get_state(entity) is Some(Blink) {
-          guard rockheads.get(entity) is Some(ai)
+          guard rockheads.get(entity) is Some(ai) else { continue }
           if ai.phase is Waiting {
             ai.phase = Attacking
           }
-        } else if @object.get_state(entity) is Some(BottomHit) {
-          guard rockheads.get(entity) is Some(ai)
-          guard ai.phase is Attacking
-          ai.phase = Resting(countdown=15)
-          @object.enter_state(entity, Idle)
         }
       Some(MaskDude) => {
         let player = entity
@@ -287,6 +282,7 @@ fn check_enemies() -> Unit {
         if @location.is_grounded(entity) &&
           !(@object.get_state(entity) is Some(BottomHit)) {
           @object.enter_state(entity, BottomHit)
+          ai.phase = Resting(countdown=15)
         } else {
           @location.set_vertical_velocity(entity, 2)
         }
@@ -294,6 +290,7 @@ fn check_enemies() -> Unit {
         if countdown <= 0 {
           ai.phase = Returning
         } else {
+          @location.set_vertical_velocity(entity, 0)
           ai.phase = Resting(countdown=countdown - 1)
         }
       Returning => {
