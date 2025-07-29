@@ -6,7 +6,9 @@ fn entities() -> Iter[Entity]
 
 fn on_remove(Entity, () -> Unit) -> Unit
 
-fn remove_entities(Entity) -> Unit
+fn remove_entity(Entity) -> Unit
+
+fn remove_entity_defer(Entity) -> Unit
 
 // Types and methods
 type Entity

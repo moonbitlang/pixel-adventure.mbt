@@ -23,13 +23,23 @@ fn get_hp() -> Int
 
 fn get_player() -> @entity.Entity?
 
+fn get_player_state() -> PlayerState
+
 fn get_score() -> Int
 
+fn heal(Int) -> Unit
+
 fn set_player(@entity.Entity) -> Unit
+
+fn set_player_state(PlayerState) -> Unit
+
+fn take_damage(Int) -> Unit
 
 fn update() -> Unit
 
 // Types and methods
+type PlayerState
+impl Eq for PlayerState
 
 // Type aliases
 

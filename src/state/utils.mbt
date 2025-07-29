@@ -17,7 +17,6 @@ pub fn add_player(position : @math.Vec2D) -> Unit {
   guard player.val is None else { return }
   let entity = @entity.Entity::new()
   @object.set_character(entity, MaskDude)
-  @object.enter_state(entity, Idle)
   @object.set_direction(entity, Right)
   @location.set_entity(
     entity,
@@ -29,13 +28,13 @@ pub fn add_player(position : @math.Vec2D) -> Unit {
   )
   player.val = Some(entity)
   @entity.on_remove(entity, () => player.val = None)
+  @anime.play_animation(entity, @anime.default_sprites.get(MaskDude).unwrap())
 }
 
 ///|
 pub fn add_rockhead(position : @math.Vec2D) -> Unit {
   let rockhead = @entity.Entity::new()
   @object.set_character(rockhead, RockHead)
-  @object.enter_state(rockhead, Idle)
   @object.set_direction(rockhead, Right)
   @location.set_entity(
     rockhead,
@@ -44,13 +43,13 @@ pub fn add_rockhead(position : @math.Vec2D) -> Unit {
   )
   rockheads.set(rockhead, RockHeadAI::new(position, Down))
   @entity.on_remove(rockhead, () => rockheads.remove(rockhead))
+  @anime.play_animation(rockhead, @anime.default_sprites.get(RockHead).unwrap())
 }
 
 ///|
 pub fn add_mushroom(position : @math.Vec2D) -> Unit {
   let mushroom = @entity.Entity::new()
   @object.set_character(mushroom, Mushroom)
-  @object.enter_state(mushroom, Idle)
   @object.set_direction(mushroom, Right)
   @location.set_entity(
     mushroom,
@@ -60,13 +59,13 @@ pub fn add_mushroom(position : @math.Vec2D) -> Unit {
       @math.Vec2D::new(32, 20),
     ),
   )
+  @anime.play_animation(mushroom, @anime.default_sprites.get(Mushroom).unwrap())
 }
 
 ///|
 pub fn add_trophy(position : @math.Vec2D) -> Unit {
   let trophy = @entity.Entity::new()
   @object.set_character(trophy, Trophy)
-  @object.enter_state(trophy, Idle)
   @object.set_direction(trophy, Right)
   @location.set_entity(
     trophy,
@@ -76,17 +75,18 @@ pub fn add_trophy(position : @math.Vec2D) -> Unit {
       @math.Vec2D::new(56, 48),
     ),
   )
+  @anime.play_animation(trophy, @anime.default_sprites.get(Trophy).unwrap())
 }
 
 ///|
 pub fn add_banana(position : @math.Vec2D) -> Unit {
   let banana = @entity.Entity::new()
   @object.set_character(banana, Banana)
-  @object.enter_state(banana, Idle)
   @object.set_direction(banana, Right)
   @location.set_entity(
     banana,
     position,
     @math.HitBox::rect(position, @math.Vec2D::new(32, 32)),
   )
+  @anime.play_animation(banana, @anime.default_sprites.get(Banana).unwrap())
 }

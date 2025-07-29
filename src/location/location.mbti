@@ -11,9 +11,13 @@ fn get_collision(@entity.Entity) -> Map[@entity.Entity, @math.CollisionInfo]
 
 fn get_entity(@entity.Entity) -> State?
 
+fn get_velocity(@entity.Entity) -> @math.Vec2D
+
 fn is_grounded(@entity.Entity) -> Bool
 
 let quadtree : Ref[QuadTree]
+
+fn register_collide_callback((@entity.Entity, @entity.Entity, @math.CollisionInfo) -> Unit) -> Unit
 
 fn set_entity(@entity.Entity, @math.Vec2D, @math.HitBox, velocity~ : @math.Vec2D = ..) -> Unit
 

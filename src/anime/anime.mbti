@@ -1,0 +1,82 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/adventure/anime"
+
+import(
+  "Yoorkin/rabbit-tea/dom"
+  "peter-jerry-ye/adventure/entity"
+  "peter-jerry-ye/adventure/math"
+  "peter-jerry-ye/adventure/object"
+)
+
+// Values
+const REFRESH_RATE : UInt = 3
+
+let banana_disapper : Animation
+
+let banana_idle : Animation
+
+let default_sprites : Map[@object.Character, Animation]
+
+let maskdude_disapper : Animation
+
+let maskdude_fall : Animation
+
+let maskdude_hit : Animation
+
+let maskdude_idle : Animation
+
+let maskdude_jump : Animation
+
+let maskdude_run : Animation
+
+let mushroom_disapper : Animation
+
+let mushroom_hit : Animation
+
+let mushroom_idle : Animation
+
+let mushroom_run : Animation
+
+fn play_animation(@entity.Entity, Animation, from_start~ : Bool = .., callback~ : (() -> Unit)? = ..) -> Unit
+
+let rockhead_blink : Animation
+
+let rockhead_bottom_hit : Animation
+
+let rockhead_hit : Animation
+
+let rockhead_idle : Animation
+
+let rockhead_left_hit : Animation
+
+let rockhead_right_hit : Animation
+
+let rockhead_top_hit : Animation
+
+let sprites : Map[@entity.Entity, Sprite]
+
+let trophy_idle : Animation
+
+let trophy_pressed : Animation
+
+// Types and methods
+pub struct Animation {
+  sprite : @dom.HTMLImageElement
+  id : String
+  max_frame : UInt
+  loop_ : Bool
+  height : Double
+  width : Double
+  offset : @math.Vec2D
+}
+
+pub(all) struct Sprite {
+  animation : Animation
+  mut pos : UInt
+  mut callbacks : Array[() -> Unit]
+}
+
+// Type aliases
+
+// Traits
+

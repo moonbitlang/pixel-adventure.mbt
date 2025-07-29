@@ -28,33 +28,10 @@ pub(all) enum Terrain {
 }
 
 ///|
-pub(all) enum State {
-  Idle
-  Hit
-  Jump
-  Fall
-  Run
-  Disapper
-  Pressed
-  Blink
-  BottomHit
-  RightHit
-  TopHit
-  LeftHit
-} derive(Eq, Hash, Show)
-
-///|
 pub(all) enum Direction {
   Left
   Right
 }
-
-///|
-pub(all) enum Stage {
-  Enter
-  Active
-  Exit
-} derive(Eq, Hash)
 
 ///|
 let character : Map[@entity.Entity, Character] = {}
@@ -73,26 +50,6 @@ pub fn get_character(entity : @entity.Entity) -> Character? {
 }
 
 ///|
-let state : Map[@entity.Entity, State] = {}
-
-///|
-pub fn enter_state(entity : @entity.Entity, new_state : State) -> Unit {
-  if stage.get(entity) is None {
-    @entity.on_remove(entity, () => stage.remove(entity))
-  }
-  if state.get(entity) is None {
-    @entity.on_remove(entity, () => state.remove(entity))
-  }
-  state[entity] = new_state
-  stage[entity] = Enter
-}
-
-///|
-pub fn get_state(entity : @entity.Entity) -> State? {
-  state.get(entity)
-}
-
-///|
 let direction : Map[@entity.Entity, Direction] = {}
 
 ///|
@@ -106,22 +63,6 @@ pub fn set_direction(entity : @entity.Entity, dir : Direction) -> Unit {
 ///|
 pub fn get_direction(entity : @entity.Entity) -> Direction? {
   direction.get(entity)
-}
-
-///|
-let stage : Map[@entity.Entity, Stage] = {}
-
-///|
-pub fn set_stage(entity : @entity.Entity, new_stage : Stage) -> Unit {
-  if stage.get(entity) is None {
-    @entity.on_remove(entity, () => stage.remove(entity))
-  }
-  stage[entity] = new_stage
-}
-
-///|
-pub fn get_stage(entity : @entity.Entity) -> Stage? {
-  stage.get(entity)
 }
 
 ///|
@@ -143,41 +84,4 @@ pub fn get_terrain(entity : @entity.Entity) -> Terrain? {
 ///|
 pub fn has_gravity(entity : @entity.Entity) -> Bool {
   get_character(entity) is Some(MaskDude | Mushroom)
-}
-
-///|
-typealias Int as Mass
-
-///|
-pub fn get_mass(entity : @entity.Entity) -> Mass {
-  match get_character(entity) {
-    Some(RockHead) => 50
-    Some(Banana) => 0
-    Some(Mushroom) => 10
-    Some(MaskDude) => 20
-    Some(Trophy) => 0
-    None => 100
-  }
-}
-
-///|
-/// Check if two entities should collide and the first entity should give way to the second
-/// 
-/// i.e. if the first entity should resolve the collision by moving out of the way
-pub fn collides(entity1 : @entity.Entity, entity2 : @entity.Entity) -> Bool {
-  get_mass(entity1) < get_mass(entity2)
-  // guard get_character(entity1) is Some(character) else {
-  //   // Terrain never moves
-  //   false
-  // }
-  // if character is Banana {
-  //   // Bananas never move
-  //   return false
-  // }
-  // if character is RockHead {
-  //   return get_terrain(entity2) is Some(_) ||
-  //     !(get_character(entity2) is Some(Banana))
-  // } else {
-  //   get_terrain(entity2) is Some(_) || get_character(entity2) is Some(RockHead)
-  // }
 }

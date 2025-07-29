@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/adventure/event"
+
+// Values
+fn defer_event(() -> Unit) -> Unit
+
+fn update() -> Unit
+
+// Types and methods
+
+// Type aliases
+pub typealias () -> Unit as Event
+
+// Traits
+

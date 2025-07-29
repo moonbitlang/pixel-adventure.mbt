@@ -21,6 +21,7 @@ fn main {
   @external.schedule_with_fixed_interval(1000 / 500, () => {
     @state.update()
     @location.update()
+    @event.update()
   })
   |> ignore
   // Render

@@ -1,0 +1,10 @@
+{
+    "import": [
+      "peter-jerry-ye/adventure/entity",
+      "peter-jerry-ye/adventure/math",
+      "peter-jerry-ye/adventure/config",
+      "peter-jerry-ye/adventure/object",
+      "peter-jerry-ye/adventure/event",
+      "Yoorkin/rabbit-tea/dom"
+    ]
+}

@@ -71,14 +71,36 @@ pub fn set_horizontal_velocity(
 }
 
 ///|
+pub fn get_velocity(entity : @entity.Entity) -> @math.Vec2D {
+  guard state.get(entity) is Some({ velocity, .. })
+  velocity
+}
+
+///|
 pub fn is_grounded(entity : @entity.Entity) -> Bool {
   grounded.get(entity) is Some(true)
 }
 
 ///|
+let collide_callbacks : Array[
+  (@entity.Entity, @entity.Entity, @math.CollisionInfo) -> Unit,
+] = []
+
+///|
+pub fn register_collide_callback(
+  callback : (@entity.Entity, @entity.Entity, @math.CollisionInfo) -> Unit,
+) -> Unit {
+  collide_callbacks.push(callback)
+}
+
+///|
+let last_collides : Set[(@entity.Entity, @entity.Entity)] = Set::new()
+
+///|
 pub fn update() -> Unit {
   // clear old state
   grounded.clear()
+  let collide_set = Set::new()
   let old_tree = quadtree.val
   quadtree.val = QuadTree::new(
     @math.Vec2D::new(0, 0),
@@ -105,7 +127,7 @@ pub fn update() -> Unit {
     let mut move_x = 0.0
     let mut move_y = 0.0
     for prev_entity in collisions {
-      guard prev_entity != entity && @object.collides(entity, prev_entity) else {
+      guard prev_entity != entity && collides(entity, prev_entity) else {
         continue
       }
       guard state.get(prev_entity) is Some({ hitbox: static_hitbox, .. }) else {
@@ -115,6 +137,13 @@ pub fn update() -> Unit {
         is Some(collision_info) else {
         continue
       }
+      if !last_collides.contains((entity, prev_entity)) {
+        collide_callbacks.each(fn(callback) {
+          callback(entity, prev_entity, collision_info)
+        })
+      }
+      collide_set.add((entity, prev_entity))
+
       // Resolve the collision by shifting the hitbox, but remain intersected if possible
       let bar = 0.01
       if collision_info.depth > bar {
@@ -176,5 +205,9 @@ pub fn update() -> Unit {
       acceleration: new_acceleration,
     }
     quadtree.val.insert(entity, new_hitbox)
+  }
+  last_collides.clear()
+  for pair in collide_set {
+    last_collides.add(pair)
   }
 }

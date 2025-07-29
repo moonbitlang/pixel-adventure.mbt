@@ -6,17 +6,9 @@ import(
 )
 
 // Values
-fn collides(@entity.Entity, @entity.Entity) -> Bool
-
-fn enter_state(@entity.Entity, State) -> Unit
-
 fn get_character(@entity.Entity) -> Character?
 
 fn get_direction(@entity.Entity) -> Direction?
-
-fn get_stage(@entity.Entity) -> Stage?
-
-fn get_state(@entity.Entity) -> State?
 
 fn get_terrain(@entity.Entity) -> Terrain?
 
@@ -25,8 +17,6 @@ fn has_gravity(@entity.Entity) -> Bool
 fn set_character(@entity.Entity, Character) -> Unit
 
 fn set_direction(@entity.Entity, Direction) -> Unit
-
-fn set_stage(@entity.Entity, Stage) -> Unit
 
 fn set_terrain(@entity.Entity, Terrain) -> Unit
 
@@ -45,32 +35,6 @@ pub(all) enum Direction {
   Left
   Right
 }
-
-pub(all) enum Stage {
-  Enter
-  Active
-  Exit
-}
-impl Eq for Stage
-impl Hash for Stage
-
-pub(all) enum State {
-  Idle
-  Hit
-  Jump
-  Fall
-  Run
-  Disapper
-  Pressed
-  Blink
-  BottomHit
-  RightHit
-  TopHit
-  LeftHit
-}
-impl Eq for State
-impl Hash for State
-impl Show for State
 
 pub(all) enum Terrain {
   Flat_Steel
