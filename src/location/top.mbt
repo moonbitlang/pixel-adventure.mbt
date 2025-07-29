@@ -70,6 +70,7 @@ pub fn set_horizontal_velocity(
   state[entity] = { ..st, velocity, }
 }
 
+///|
 pub fn get_velocity(entity : @entity.Entity) -> @math.Vec2D {
   guard state.get(entity) is Some({ velocity, .. })
   velocity

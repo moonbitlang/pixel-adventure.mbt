@@ -39,6 +39,7 @@ fn update() -> Unit
 
 // Types and methods
 type PlayerState
+impl Eq for PlayerState
 
 // Type aliases
 

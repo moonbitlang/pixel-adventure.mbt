@@ -11,6 +11,8 @@ fn get_collision(@entity.Entity) -> Map[@entity.Entity, @math.CollisionInfo]
 
 fn get_entity(@entity.Entity) -> State?
 
+fn get_velocity(@entity.Entity) -> @math.Vec2D
+
 fn is_grounded(@entity.Entity) -> Bool
 
 let quadtree : Ref[QuadTree]
