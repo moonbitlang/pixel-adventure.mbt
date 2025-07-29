@@ -8,6 +8,7 @@
     "rami3l/js-ffi/js",
     "peter-jerry-ye/adventure/state",
     "peter-jerry-ye/adventure/map",
-    "peter-jerry-ye/adventure/config"
+    "peter-jerry-ye/adventure/config",
+    "peter-jerry-ye/adventure/event"
   ]
 }

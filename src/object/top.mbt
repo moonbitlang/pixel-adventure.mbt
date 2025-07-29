@@ -28,22 +28,6 @@ pub(all) enum Terrain {
 }
 
 ///|
-// pub(all) enum State {
-//   Idle
-//   Hit
-//   Jump
-//   Fall
-//   Run
-//   Disapper
-//   Pressed
-//   Blink
-//   BottomHit
-//   RightHit
-//   TopHit
-//   LeftHit
-// } derive(Eq, Hash, Show)
-
-///|
 pub(all) enum Direction {
   Left
   Right
@@ -100,24 +84,4 @@ pub fn get_terrain(entity : @entity.Entity) -> Terrain? {
 ///|
 pub fn has_gravity(entity : @entity.Entity) -> Bool {
   get_character(entity) is Some(MaskDude | Mushroom)
-}
-
-///|
-typealias Int as Mass
-
-///|
-pub fn get_mass(entity : @entity.Entity) -> Mass {
-  match get_character(entity) {
-    Some(RockHead) => 50
-    Some(Banana) => 10
-    Some(Mushroom) => 20
-    Some(MaskDude) => 30
-    Some(Trophy) => 0
-    None => 100
-  }
-}
-
-///| Only the lighter entity can be pushed by the heavier one.
-pub fn collides(entity1 : @entity.Entity, entity2 : @entity.Entity) -> Bool {
-  get_mass(entity1) < get_mass(entity2)
 }

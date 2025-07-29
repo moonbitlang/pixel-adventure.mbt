@@ -13,6 +13,51 @@
 // limitations under the License.
 
 ///|
+priv enum CollisionLayer {
+  MaskDude
+  RockHead
+  Pickup
+  Terrain
+} derive(Eq)
+
+///|
+typealias Array[CollisionLayer] as CollisionMask
+
+///|
+fn get_collision_mask(entity : @entity.Entity) -> CollisionMask {
+  match @object.get_character(entity) {
+    Some(MaskDude) => [Terrain, RockHead]
+    Some(RockHead) => [RockHead, Terrain]
+    Some(Mushroom) => [MaskDude, Terrain]
+    Some(Banana) => [MaskDude, Terrain]
+    Some(Trophy) => [MaskDude, Terrain]
+    _ => []
+  }
+}
+
+///|
+fn get_collision_layer(entity : @entity.Entity) -> CollisionLayer {
+  match @object.get_character(entity) {
+    Some(MaskDude) => MaskDude
+    Some(RockHead) => RockHead
+    Some(Mushroom) => Pickup
+    Some(Banana) => Pickup
+    Some(Trophy) => Pickup
+    _ => Terrain
+  }
+}
+
+///|
+fn collides(entity : @entity.Entity, other : @entity.Entity) -> Bool {
+  if entity == other {
+    return false
+  }
+  let mask = get_collision_mask(entity)
+  let layer = get_collision_layer(other)
+  mask.contains(layer)
+}
+
+///|
 const MAX_DEPTH = 5
 
 ///|

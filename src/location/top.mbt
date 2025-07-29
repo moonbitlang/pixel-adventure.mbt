@@ -121,7 +121,7 @@ pub fn update() -> Unit {
     let mut move_x = 0.0
     let mut move_y = 0.0
     for prev_entity in collisions {
-      guard prev_entity != entity && @object.collides(entity, prev_entity) else {
+      guard prev_entity != entity && collides(entity, prev_entity) else {
         continue
       }
       guard state.get(prev_entity) is Some({ hitbox: static_hitbox, .. }) else {
