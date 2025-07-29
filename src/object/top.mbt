@@ -146,22 +146,38 @@ pub fn has_gravity(entity : @entity.Entity) -> Bool {
 }
 
 ///|
+typealias Int as Mass
+
+///|
+pub fn get_mass(entity : @entity.Entity) -> Mass {
+  match get_character(entity) {
+    Some(RockHead) => 50
+    Some(Banana) => 0
+    Some(Mushroom) => 10
+    Some(MaskDude) => 20
+    Some(Trophy) => 0
+    None => 100
+  }
+}
+
+///|
 /// Check if two entities should collide and the first entity should give way to the second
 /// 
 /// i.e. if the first entity should resolve the collision by moving out of the way
 pub fn collides(entity1 : @entity.Entity, entity2 : @entity.Entity) -> Bool {
-  guard get_character(entity1) is Some(character) else {
-    // Terrain never moves
-    false
-  }
-  if character is Banana {
-    // Bananas never move
-    return false
-  }
-  if character is RockHead {
-    return get_terrain(entity2) is Some(_) ||
-      !(get_character(entity2) is Some(Banana))
-  } else {
-    get_terrain(entity2) is Some(_) || get_character(entity2) is Some(RockHead)
-  }
+  get_mass(entity1) < get_mass(entity2)
+  // guard get_character(entity1) is Some(character) else {
+  //   // Terrain never moves
+  //   false
+  // }
+  // if character is Banana {
+  //   // Bananas never move
+  //   return false
+  // }
+  // if character is RockHead {
+  //   return get_terrain(entity2) is Some(_) ||
+  //     !(get_character(entity2) is Some(Banana))
+  // } else {
+  //   get_terrain(entity2) is Some(_) || get_character(entity2) is Some(RockHead)
+  // }
 }

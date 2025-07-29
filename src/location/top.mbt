@@ -143,11 +143,18 @@ pub fn update() -> Unit {
       }
 
       // reset velocity
-      if collision_info.direction.y > 0 && new_velocity.y >= 0 {
+      if collision_info.direction.y > 0 {
         grounded[entity] = true
-        new_velocity = @math.Vec2D::new(new_velocity.x, 0)
-      } else if collision_info.direction.y < 0 && new_velocity.y < 0 {
-        new_velocity = @math.Vec2D::new(new_velocity.x, 0)
+        new_velocity = @math.Vec2D::new(
+          new_velocity.x,
+          @cmp.minimum(new_velocity.y, 0),
+        )
+      } else if collision_info.direction.y < 0 {
+        grounded[prev_entity] = true
+        new_velocity = @math.Vec2D::new(
+          new_velocity.x,
+          @cmp.maximum(new_velocity.y, 0),
+        )
       }
     }
     new_location = new_location - @math.Vec2D::new(move_x, move_y)
