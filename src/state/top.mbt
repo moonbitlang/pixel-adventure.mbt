@@ -32,7 +32,9 @@ enum PlayerState {
   Idle
   Jump
   Fall
-}
+  Hit
+  Disappear
+} derive(Eq)
 
 ///|
 let player_state : Ref[PlayerState] = { val: Idle }
@@ -80,6 +82,9 @@ const JUMP_V = -2.5
 const RUN_V = 1.0
 
 ///|
+const RUN_ACC = 0.1
+
+///|
 pub fn update() -> Unit {
   handle_input()
   check_enemies()
@@ -94,6 +99,7 @@ pub fn take_damage(damage : Int) -> Unit {
   if hp.val <= 0 {
     hp.val = 0
     game_won.val = Some(false)
+    set_player_state(Disappear)
     @anime.play_animation(
       player,
       @anime.maskdude_disapper,
@@ -122,25 +128,33 @@ fn handle_input() -> Unit {
     take_damage(10000)
     return
   }
-  if y > 0 {
-    set_player_state(Fall)
-    @anime.play_animation(player, @anime.maskdude_fall)
+  if state == Disappear {
+    return
   }
-
+  if y > 0 && state != Hit {
+    set_player_state(Fall)
+  }
+  if @external.is_pressed(ArrowLeft) {
+    @object.set_direction(player, Left)
+    let mut x = @location.get_velocity(player).x
+    x = @cmp.maximum(-RUN_V, x - RUN_ACC)
+    @location.set_horizontal_velocity(player, x)
+  } else if @external.is_pressed(ArrowRight) {
+    @object.set_direction(player, Right)
+    let mut x = @location.get_velocity(player).x
+    x = @cmp.minimum(RUN_V, x + RUN_ACC)
+    @location.set_horizontal_velocity(player, x)
+  } else {
+    @location.set_horizontal_velocity(player, 0)
+  }
   // Handle input
   match state {
+    Hit => @anime.play_animation(player, @anime.maskdude_hit)
     Idle => {
-      if @external.is_pressed(ArrowLeft) {
+      if @location.get_velocity(player).x != 0 {
         @anime.play_animation(player, @anime.maskdude_run)
-        @object.set_direction(player, Left)
-        @location.set_horizontal_velocity(player, -RUN_V)
-      } else if @external.is_pressed(ArrowRight) {
-        @anime.play_animation(player, @anime.maskdude_run)
-        @object.set_direction(player, Right)
-        @location.set_horizontal_velocity(player, RUN_V)
       } else {
         @anime.play_animation(player, @anime.maskdude_idle)
-        @location.set_horizontal_velocity(player, 0)
       }
       if @external.is_pressed(ArrowUp) {
         set_player_state(Jump)
@@ -149,32 +163,19 @@ fn handle_input() -> Unit {
       }
     }
     Jump => {
-      if @external.is_pressed(ArrowLeft) {
-        @object.set_direction(player, Left)
-        @location.set_horizontal_velocity(player, -RUN_V)
-      } else if @external.is_pressed(ArrowRight) {
-        @object.set_direction(player, Right)
-        @location.set_horizontal_velocity(player, RUN_V)
-      }
+      @anime.play_animation(player, @anime.maskdude_jump)
       if y == 0 && @location.is_grounded(player) {
         set_player_state(Idle)
-        @anime.play_animation(player, @anime.maskdude_idle)
       }
     }
     Fall => {
-      if @external.is_pressed(ArrowLeft) {
-        @object.set_direction(player, Left)
-        @location.set_horizontal_velocity(player, -RUN_V)
-      } else if @external.is_pressed(ArrowRight) {
-        @object.set_direction(player, Right)
-        @location.set_horizontal_velocity(player, RUN_V)
-      }
+      @anime.play_animation(player, @anime.maskdude_fall)
       if @location.is_grounded(player) {
         @location.set_horizontal_velocity(player, 0)
         set_player_state(Idle)
-        @anime.play_animation(player, @anime.maskdude_idle)
       }
     }
+    Disappear => ()
   }
 }
 
@@ -201,7 +202,15 @@ fn init {
       }
       (Some(MaskDude), Some(RockHead)) =>
         if collision_info.direction.y < 0 {
-          @anime.play_animation(entity1, @anime.maskdude_hit)
+          set_player_state(Hit)
+          @anime.play_animation(
+            entity1,
+            @anime.maskdude_hit,
+            callback=(fn() {
+                @event.defer_event(fn() { set_player_state(Idle) })
+              })
+              |> Some,
+          )
           take_damage(1)
         }
       _ => ()
