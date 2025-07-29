@@ -76,9 +76,25 @@ pub fn is_grounded(entity : @entity.Entity) -> Bool {
 }
 
 ///|
+let collide_callbacks : Array[
+  (@entity.Entity, @entity.Entity, @math.CollisionInfo) -> Unit,
+] = []
+
+///|
+pub fn register_collide_callback(
+  callback : (@entity.Entity, @entity.Entity, @math.CollisionInfo) -> Unit,
+) -> Unit {
+  collide_callbacks.push(callback)
+}
+
+///|
+let last_collides : Set[(@entity.Entity, @entity.Entity)] = Set::new()
+
+///|
 pub fn update() -> Unit {
   // clear old state
   grounded.clear()
+  let collide_set = Set::new()
   let old_tree = quadtree.val
   quadtree.val = QuadTree::new(
     @math.Vec2D::new(0, 0),
@@ -115,6 +131,13 @@ pub fn update() -> Unit {
         is Some(collision_info) else {
         continue
       }
+      if !last_collides.contains((entity, prev_entity)) {
+        collide_callbacks.each(fn(callback) {
+          callback(entity, prev_entity, collision_info)
+        })
+      }
+      collide_set.add((entity, prev_entity))
+
       // Resolve the collision by shifting the hitbox, but remain intersected if possible
       let bar = 0.01
       if collision_info.depth > bar {
@@ -176,5 +199,9 @@ pub fn update() -> Unit {
       acceleration: new_acceleration,
     }
     quadtree.val.insert(entity, new_hitbox)
+  }
+  last_collides.clear()
+  for pair in collide_set {
+    last_collides.add(pair)
   }
 }

@@ -38,13 +38,18 @@ pub fn entities() -> Iter[Entity] {
 }
 
 ///|
-pub fn remove_entities(entity : Entity) -> Unit {
+pub fn remove_entity(entity : Entity) -> Unit {
   all_entities.remove(entity)
   let cbs = callbacks.get(entity).unwrap_or([])
   for callback in cbs {
     callback()
   }
   callbacks.remove(entity)
+}
+
+///|
+pub fn remove_entity_defer(entity : Entity) -> Unit {
+  @event.defer_event(fn() { remove_entity(entity) })
 }
 
 ///|

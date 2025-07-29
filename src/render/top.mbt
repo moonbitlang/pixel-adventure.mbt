@@ -19,208 +19,6 @@ const DEBUG_HITBOX = true
 const DEBUG_QUADTREE = true
 
 ///|
-let next_frame : Map[@entity.Entity, UInt] = {}
-
-///|
-let refresh_rate : UInt = @config.GAME_FPS / 20
-
-///|
-priv struct Animation {
-  sprite : @dom.HTMLImageElement
-  max_frame : UInt
-  loop_ : Bool
-  height : Double
-  width : Double
-  offset : @math.Vec2D
-}
-
-///|
-fn Animation::new(
-  sprite : @dom.HTMLImageElement,
-  max_frame~ : UInt,
-  loop_~ : Bool = true,
-  height~ : Double,
-  width~ : Double,
-  offset~ : @math.Vec2D = @math.Vec2D::new(0, 0),
-) -> Animation {
-  { sprite, max_frame: max_frame * refresh_rate, loop_, height, width, offset }
-}
-
-///|
-let sprites : Map[(@object.Character, @object.State), Animation] = {}
-
-///|
-fn init {
-  sprites[(MaskDude, Idle)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src(
-      "/pixel_adventure/Main Characters/Mask Dude/Idle (32x32).png",
-    )
-    Animation::new(element, max_frame=11, height=32.0, width=32.0)
-  }
-  sprites[(MaskDude, Hit)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src(
-      "/pixel_adventure/Main Characters/Mask Dude/Hit (32x32).png",
-    )
-    Animation::new(element, max_frame=7, loop_=false, height=32.0, width=32.0)
-  }
-  sprites[(MaskDude, Jump)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src(
-      "/pixel_adventure/Main Characters/Mask Dude/Jump (32x32).png",
-    )
-    Animation::new(element, max_frame=1, height=32.0, width=32.0)
-  }
-  sprites[(MaskDude, Fall)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src(
-      "/pixel_adventure/Main Characters/Mask Dude/Fall (32x32).png",
-    )
-    Animation::new(element, max_frame=1, height=32.0, width=32.0)
-  }
-  sprites[(MaskDude, Run)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src(
-      "/pixel_adventure/Main Characters/Mask Dude/Run (32x32).png",
-    )
-    Animation::new(element, max_frame=12, height=32.0, width=32.0)
-  }
-  sprites[(MaskDude, Disapper)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Main Characters/Desappearing (96x96).png")
-    Animation::new(
-      element,
-      max_frame=7,
-      loop_=false,
-      height=96.0,
-      width=96,
-      offset=@math.Vec2D::new(-32, -32),
-    )
-  }
-  sprites[(Mushroom, Idle)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Enemies/Mushroom/Idle (32x32).png")
-    Animation::new(element, max_frame=14, height=32.0, width=32.0)
-  }
-  sprites[(Mushroom, Run)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Enemies/Mushroom/Run (32x32).png")
-    Animation::new(element, max_frame=16, height=32.0, width=32.0)
-  }
-  sprites[(Mushroom, Hit)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Enemies/Mushroom/Hit.png")
-    Animation::new(element, max_frame=5, loop_=false, height=32.0, width=32.0)
-  }
-  sprites[(Mushroom, Disapper)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Main Characters/Desappearing (96x96).png")
-    Animation::new(
-      element,
-      max_frame=7,
-      loop_=false,
-      height=96.0,
-      width=96,
-      offset=@math.Vec2D::new(-32, -32),
-    )
-  }
-  sprites[(Banana, Idle)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Items/Fruits/Bananas.png")
-    Animation::new(element, max_frame=17, height=32.0, width=32.0)
-  }
-  sprites[(Banana, Disapper)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Items/Fruits/Collected.png")
-    Animation::new(element, max_frame=6, loop_=false, height=32.0, width=32.0)
-  }
-  sprites[(Trophy, Idle)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Items/Checkpoints/End/End (Idle).png")
-    Animation::new(element, max_frame=1, height=64.0, width=64.0)
-  }
-  sprites[(Trophy, Pressed)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src(
-      "pixel_adventure/Items/Checkpoints/End/End (Pressed) (64x64).png",
-    )
-    Animation::new(element, max_frame=8, loop_=false, height=64.0, width=64.0)
-  }
-  sprites[(RockHead, Idle)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Traps/Rock Head/Idle.png")
-    Animation::new(
-      element,
-      max_frame=1,
-      height=42.0,
-      width=42.0,
-      offset=@math.Vec2D::new(-5, -5),
-    )
-  }
-  sprites[(RockHead, Blink)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Traps/Rock Head/Blink (42x42).png")
-    Animation::new(
-      element,
-      max_frame=4,
-      loop_=false,
-      height=42.0,
-      width=42.0,
-      offset=@math.Vec2D::new(-5, -5),
-    )
-  }
-  sprites[(RockHead, BottomHit)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Traps/Rock Head/Bottom Hit (42x42).png")
-    Animation::new(
-      element,
-      max_frame=4,
-      height=42.0,
-      width=42.0,
-      loop_=false,
-      offset=@math.Vec2D::new(-5, -5),
-    )
-  }
-  sprites[(RockHead, LeftHit)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Traps/Rock Head/Left Hit (42x42).png")
-    Animation::new(
-      element,
-      max_frame=4,
-      height=42.0,
-      width=42.0,
-      loop_=false,
-      offset=@math.Vec2D::new(-5, -5),
-    )
-  }
-  sprites[(RockHead, RightHit)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Traps/Rock Head/Right Hit (42x42).png")
-    Animation::new(
-      element,
-      max_frame=4,
-      height=42.0,
-      width=42.0,
-      loop_=false,
-      offset=@math.Vec2D::new(-5, -5),
-    )
-  }
-  sprites[(RockHead, TopHit)] = {
-    let element = @dom.HTMLImageElement::new()
-    element.set_src("/pixel_adventure/Traps/Rock Head/Top Hit (42x42).png")
-    Animation::new(
-      element,
-      max_frame=4,
-      height=42.0,
-      width=42.0,
-      loop_=false,
-      offset=@math.Vec2D::new(-5, -5),
-    )
-  }
-}
-
-///|
 let view_port : Ref[Double] = { val: 0.0 }
 
 ///|
@@ -280,37 +78,22 @@ fn render_character(
   entity : @entity.Entity,
 ) -> Unit {
   guard @object.get_character(entity) is Some(character)
-  guard @object.get_state(entity) is Some(state)
-  guard sprites.get((character, state)) is Some(sprite) else { return }
-
-  // Compute next frame
-  guard @object.get_stage(entity) is Some(stage)
-  // Remove data when the entity is removed
-  if next_frame.get(entity) is None {
-    @entity.on_remove(entity, () => next_frame.remove(entity))
-  }
-  let (sprite, curr_frame) = if stage == Enter {
-    // It's a new stage, so reset the frame counter
-    @object.set_stage(entity, Active)
-    (sprite, 0U)
-    // update the frame
-  } else if next_frame.get(entity) is Some(f) {
-    // Otherwise, just increment the frame
-    (sprite, f)
-  } else {
-    // Wasn't initialized, so initialize it
-    (sprite, 0U)
-  }
-  // Compute next frame
-  if curr_frame + 1 == sprite.max_frame {
-    if !sprite.loop_ {
-      // Does not move forward. Will be reset by entering a new stage
-      @object.set_stage(entity, Exit)
+  guard @anime.sprites.get(entity) is Some(sprite) else { return }
+  let anime = sprite.animation
+  let cur_frame = sprite.pos
+  if cur_frame >= anime.max_frame - 1 {
+    if anime.loop_ {
+      sprite.pos = 0
     } else {
-      next_frame[entity] = 0
+      sprite.callbacks.each(fn(callback) { callback() })
+      @anime.play_animation(
+        entity,
+        @anime.default_sprites.get(character).unwrap(),
+        from_start=true,
+      )
     }
   } else {
-    next_frame[entity] = curr_frame + 1
+    sprite.pos += 1
   }
 
   // Draw the character
@@ -319,26 +102,23 @@ fn render_character(
   context.save()
   if direction is Left {
     context.translate(
-      location.x + sprite.width + sprite.offset.x,
-      location.y + sprite.offset.y,
+      location.x + anime.width + anime.offset.x,
+      location.y + anime.offset.y,
     )
     context.scale(-1, 1)
   } else {
-    context.translate(
-      location.x + sprite.offset.x,
-      location.y + sprite.offset.y,
-    )
+    context.translate(location.x + anime.offset.x, location.y + anime.offset.y)
   }
   context.draw_image_with_src_and_dst_size(
-    sprite.sprite |> @js.Value::cast_from |> @js.Value::cast,
-    sprite.width * (curr_frame / refresh_rate).to_double(),
+    anime.sprite |> @js.Value::cast_from |> @js.Value::cast,
+    anime.width * (cur_frame / @anime.REFRESH_RATE).to_double(),
     0,
-    sprite.width,
-    sprite.height,
+    anime.width,
+    anime.height,
     0,
     0,
-    sprite.width,
-    sprite.height,
+    anime.width,
+    anime.height,
   )
   context.restore()
 }
